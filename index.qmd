@@ -1,0 +1,7 @@
+---
+title: "ggplot2"
+execute:
+  echo: false
+  warning: true
+---
+
