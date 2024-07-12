@@ -1,7 +1,78 @@
 ---
 title: "ggplot2"
 execute:
-  echo: false
+  echo: true
   warning: true
+editor_options: 
+  chunk_output_type: console
 ---
+```{r}
+#| echo: false
+library(ggplot2)
+```
+
+# ggplot2 basics
+A ggplot2 is initiated by the `ggplot()` command. When called on its own,
+it produces a graph without any data points. It is used to define options that
+will be forwarded to the functions responsible for adding data.
+
+A `ggplot` consists of layers that add graphical elements to the final plot.
+Layers are functions that begin with `geom_` and define the type of plot.
+Examples are `geom_point` and `geom_col`, which create scatter and bar plots, respectively.
+
+The general structure is as follows
+```
+ggplot() +
+  geom_
+```
+
+## Plotting Data
+The data to be plotted can be provided in either the `ggplot()` function, which will forward it
+to the `geom_` functions, or in the `geom_` functions directly. In either way,
+the `data.frame` containing the data is specified as an argument directly, while the mapping function
+`aes()` contains information on which columns of the `data.frame` belong to which variable.
+
+```
+ggplot(data.frame, aes(x = independent.variable, y = dependent.variable)) +
+  geom_scatter()
+```
+
+Using the `iris` dataset, plotting the `Sepal.Width` against `Sepal.Length` works
+as follows
+```{r}
+ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width)) +
+  geom_point()
+```
+
+## Using Factors
+It is necessary to differentiate between different datasets if they are displayed within
+the same graph. This can be easily done by assigning factors to data points originating
+from different datasets. Using the mappings `colour = factor.variable` or `fill = factor.variable`
+in the `aes()` function leads to colouring of the data points according to their factor.
+A legend is added automatically.
+
+```{r}
+ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, colour = Species)) +
+  geom_point()
+```
+
+This is very powerful in settings during which data processing is performed. In the
+example, the confidence intervals and the fitted line of the different datasets are 
+drawn by the same commands (`geom_ribbon()` and `geom_line()`, respectively), 
+while colouring the fit according to the `colour` mapping
+and the confidence interval according to the `fill` mapping.
+
+```{r}
+# fit the data, perform prediction, join the data.frame with the corresponding
+# independent variables
+prediction_values_for_plot <- lm(Sepal.Width ~ Sepal.Length * Species, iris) |>
+                  predict(interval = 'confidence') |>
+                    cbind(iris)
+
+ggplot(prediction_values_for_plot, aes(x = Sepal.Length, y = Sepal.Width, ymin = lwr, ymax = upr,
+                                       colour = Species, fill = Species)) +
+  geom_ribbon(aes(y = fit), alpha = 0.3, linewidth = 0) +
+  geom_line(aes(y = fit)) +
+  geom_point()
+```
 
