@@ -99,7 +99,7 @@ geom_kable
 ```
 
 
-## Using Factors
+## Using Factors {#sec-factors}
 It is necessary to differentiate between different datasets if they are displayed within
 the same graph. This can be easily done by assigning factors to data points originating
 from different datasets. Using the mappings `colour = factor.variable` or `fill = factor.variable`
@@ -168,5 +168,24 @@ plot_grid(g1, g2)
 ```
 
 ### Changing the Color Palette
+As seen in @sec-factors, ggplot2 automatically colors factors specified by `color` or `fill` using a pre-defined palette. To overwrite those standard palettes, the scales `_color_` and `_fill_` can be used, for which a lot of pre-defined color palettes exist. Providing custom color palettes can be done with `_color_manual` and `_fill_manual`, for which the palette needs to be provided in a `palette()` function. *For whatever reason, the assignment of the palette to its variable has to be done twice*.
+```{r}
+ggblack <- rgb(118, 113, 113, maxColorValue = 255) # gray
+gglime <- rgb(140, 198, 63, maxColorValue = 255) # lime
+ggred <- rgb(241, 89, 42, maxColorValue = 255) # red
+ggturquoise <- rgb(37, 170, 225, maxColorValue = 255) # turqoise
+
+ggpalette <- palette(c(ggblack, gglime, ggred, ggturquoise))
+ggpalette <- palette(c(ggblack, gglime, ggred, ggturquoise))
+
+g1 <- ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, colour = Species)) +
+  geom_point()
+
+g2 <- ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, colour = Species)) +
+  geom_point() +
+  scale_color_manual(values = ggpalette)
+
+plot_grid(g1, g2)
+```
 
 ### Themes

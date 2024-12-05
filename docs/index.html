@@ -174,7 +174,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <ul class="collapse">
   <li><a href="#important-_geoms" id="toc-important-_geoms" class="nav-link" data-scroll-target="#important-_geoms">Important <code>_geoms()</code></a></li>
   </ul></li>
-  <li><a href="#using-factors" id="toc-using-factors" class="nav-link" data-scroll-target="#using-factors">Using Factors</a></li>
+  <li><a href="#sec-factors" id="toc-sec-factors" class="nav-link" data-scroll-target="#sec-factors">Using Factors</a></li>
   <li><a href="#changing-the-appearance-of-the-plot" id="toc-changing-the-appearance-of-the-plot" class="nav-link" data-scroll-target="#changing-the-appearance-of-the-plot">Changing the Appearance of the Plot</a>
   <ul class="collapse">
   <li><a href="#changing-the-axes" id="toc-changing-the-axes" class="nav-link" data-scroll-target="#changing-the-axes">Changing the Axes</a></li>
@@ -279,8 +279,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </section>
 </section>
-<section id="using-factors" class="level2">
-<h2 class="anchored" data-anchor-id="using-factors">Using Factors</h2>
+<section id="sec-factors" class="level2">
+<h2 class="anchored" data-anchor-id="sec-factors">Using Factors</h2>
 <p>It is necessary to differentiate between different datasets if they are displayed within the same graph. This can be easily done by assigning factors to data points originating from different datasets. Using the mappings <code>colour = factor.variable</code> or <code>fill = factor.variable</code> in the <code>aes()</code> function leads to colouring of the data points according to their factor. A legend is added automatically.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(iris, <span class="fu">aes</span>(<span class="at">x =</span> Sepal.Length, <span class="at">y =</span> Sepal.Width, <span class="at">colour =</span> Species)) <span class="sc">+</span></span>
@@ -348,6 +348,28 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="changing-the-color-palette" class="level3">
 <h3 class="anchored" data-anchor-id="changing-the-color-palette">Changing the Color Palette</h3>
+<p>As seen in <a href="#sec-factors">Section&nbsp;1.2</a>, ggplot2 automatically colors factors specified by <code>color</code> or <code>fill</code> using a pre-defined palette. To overwrite those standard palettes, the scales <code>_color_</code> and <code>_fill_</code> can be used, for which a lot of pre-defined color palettes exist. Providing custom color palettes can be done with <code>_color_manual</code> and <code>_fill_manual</code>, for which the palette needs to be provided in a <code>palette()</code> function. <em>For whatever reason, the assignment of the palette to its variable has to be done twice</em>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>ggblack <span class="ot">&lt;-</span> <span class="fu">rgb</span>(<span class="dv">118</span>, <span class="dv">113</span>, <span class="dv">113</span>, <span class="at">maxColorValue =</span> <span class="dv">255</span>) <span class="co"># gray</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>gglime <span class="ot">&lt;-</span> <span class="fu">rgb</span>(<span class="dv">140</span>, <span class="dv">198</span>, <span class="dv">63</span>, <span class="at">maxColorValue =</span> <span class="dv">255</span>) <span class="co"># lime</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>ggred <span class="ot">&lt;-</span> <span class="fu">rgb</span>(<span class="dv">241</span>, <span class="dv">89</span>, <span class="dv">42</span>, <span class="at">maxColorValue =</span> <span class="dv">255</span>) <span class="co"># red</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>ggturquoise <span class="ot">&lt;-</span> <span class="fu">rgb</span>(<span class="dv">37</span>, <span class="dv">170</span>, <span class="dv">225</span>, <span class="at">maxColorValue =</span> <span class="dv">255</span>) <span class="co"># turqoise</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>ggpalette <span class="ot">&lt;-</span> <span class="fu">palette</span>(<span class="fu">c</span>(ggblack, gglime, ggred, ggturquoise))</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>ggpalette <span class="ot">&lt;-</span> <span class="fu">palette</span>(<span class="fu">c</span>(ggblack, gglime, ggred, ggturquoise))</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>g1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(iris, <span class="fu">aes</span>(<span class="at">x =</span> Sepal.Length, <span class="at">y =</span> Sepal.Width, <span class="at">colour =</span> Species)) <span class="sc">+</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>g2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(iris, <span class="fu">aes</span>(<span class="at">x =</span> Sepal.Length, <span class="at">y =</span> Sepal.Width, <span class="at">colour =</span> Species)) <span class="sc">+</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> ggpalette)</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_grid</span>(g1, g2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
 </section>
 <section id="themes" class="level3">
 <h3 class="anchored" data-anchor-id="themes">Themes</h3>
