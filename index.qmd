@@ -2,13 +2,16 @@
 title: "ggplot2"
 execute:
   echo: true
-  warning: true
+  warning: false
 editor_options: 
   chunk_output_type: console
 ---
 ```{r}
 #| echo: false
 library(ggplot2)
+library(knitr)
+library(kableExtra)
+library(cowplot)
 ```
 
 # ggplot2 basics
@@ -21,7 +24,9 @@ Layers are functions that begin with `geom_` and define the type of plot.
 Examples are `geom_point` and `geom_col`, which create scatter and bar plots, respectively.
 
 The general structure is as follows
-```
+```{r}
+#| eval: false
+
 ggplot() +
   geom_
 ```
@@ -32,9 +37,11 @@ to the `geom_` functions, or in the `geom_` functions directly. In either way,
 the `data.frame` containing the data is specified as an argument directly, while the mapping function
 `aes()` contains information on which columns of the `data.frame` belong to which variable.
 
-```
+```{r}
+#| eval: false
+
 ggplot(data.frame, aes(x = independent.variable, y = dependent.variable)) +
-  geom_scatter()
+  geom_point()
 ```
 
 Using the `iris` dataset, plotting the `Sepal.Width` against `Sepal.Length` works
@@ -43,6 +50,54 @@ as follows
 ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width)) +
   geom_point()
 ```
+
+### Important `_geoms()`
+```{r}
+#| include: false
+
+c_geom <- c(
+  "geom_point",
+  "geom_ribbon",
+  "geom_col",
+  "geom_errorbar",
+  "geom_hline/_vline"
+)
+
+c_geom_expl <- c(
+  "plots points",
+  "plots an area between points",
+  "creates columns barplot",
+  "plot error bars",
+  "plots horizontal/vertical line"
+)
+
+c_geom_imp_settings <- c(
+  "size",
+  "alpha, linetype",
+  "position",
+  "width",
+  "intercept"
+)
+geom_kable_colnames <- c(
+  "geoms",
+  "explanation",
+  "important settings"
+)
+geom_kable <- data.frame(
+  geoms = c_geom,
+  explanations = c_geom_expl,
+  settings = c_geom_imp_settings
+) |>
+  kable(col.names = geom_kable_colnames) |>
+  kable_styling()
+```
+The table below serves as a guide to which `_geoms` are useful.
+```{r}
+#| echo: false
+
+geom_kable
+```
+
 
 ## Using Factors
 It is necessary to differentiate between different datasets if they are displayed within
@@ -69,10 +124,49 @@ prediction_values_for_plot <- lm(Sepal.Width ~ Sepal.Length * Species, iris) |>
                   predict(interval = 'confidence') |>
                     cbind(iris)
 
-ggplot(prediction_values_for_plot, aes(x = Sepal.Length, y = Sepal.Width, ymin = lwr, ymax = upr,
-                                       colour = Species, fill = Species)) +
+ggplot(prediction_values_for_plot, aes(x = Sepal.Length, 
+                                       y = Sepal.Width, 
+                                       ymin = lwr, 
+                                       ymax = upr,
+                                       colour = Species, 
+                                       fill = Species)) +
   geom_ribbon(aes(y = fit), alpha = 0.3, linewidth = 0) +
   geom_line(aes(y = fit)) +
   geom_point()
 ```
 
+
+## Changing the Appearance of the Plot
+`scale_` act on the appearance of the plot. They can change the way axes are displayed or how colors are applied to the plotted data, for example.
+
+### Changing the Axes
+Common functions to alter the axes are (for the x-axis, replace with y for the y-axis):
+
+- `scale_x_continuous` for continuous values
+- `scale_x_log10` for log-transforming the axis (not the values themselves)
+
+They take, among others, the following options:
+
+- `limits` range of values plotted
+- `breaks` ticks displayed
+- `expand` additional space before/after the plotted data
+- `guide` can add minor ticks, among others
+
+```{r}
+library(ggprism)
+g1 <- ggplot(cars, aes(x = speed, y = dist)) +
+  geom_point() +
+  ggtitle("g1")
+
+g2 <- ggplot(cars, aes(x = speed, y = dist)) +
+  geom_point() +
+  scale_x_continuous(limits = c(8, 16), breaks = seq(8, 16, 1)) + 
+  scale_y_log10(guide = 'prism_minor') +
+  ggtitle("g2")
+
+plot_grid(g1, g2)
+```
+
+### Changing the Color Palette
+
+### Themes
