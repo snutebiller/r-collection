@@ -203,3 +203,47 @@ plot_grid(g1, g2)
 - `_classic()`
 
 These themes can be further modified, or new themes can be created, using the `theme()` function.
+
+```{r}
+g1 <- ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, colour = Species)) +
+  geom_point()
+
+g2 <- ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, colour = Species)) +
+  geom_point() +
+  theme_linedraw()
+
+plot_grid(g1, g2)
+```
+
+
+## Reusing ggplot2 objects
+It may be useful to save several `ggplot2` objects like `geom_`, `scale_`, and `theme_` to use them for multiple plots. This can be achieved by saving the objects in a `list` and adding it to `ggplot()` using the `+` sign.
+```{r}
+changes <- list(
+  geom_point(),
+  theme_linedraw(),
+  ggtitle('scatter plot')
+)
+
+ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, colour = Species)) +
+  changes
+```
+
+## Defining functions to work with ggplot2 options
+Some options of `ggplot2` functions allow a function as their value. The required input values are defined in the help file of the function.
+```{r}
+library(stringr) # for str_wrap
+
+data <- data.frame(description = c("a very long text that requires linebreaks", 
+                                   'another text'), 
+                   val = c(30, 300))
+
+format_label <- function(x) str_wrap(x, width = 20)
+format_breaks <- function(vec) seq(vec[1], vec[2], (vec[2]-vec[1])/5)
+
+ggplot(data, aes(x = description, y = val)) +
+  geom_col() +
+  coord_flip() +
+  scale_x_discrete(labels = format_label) +
+  scale_y_continuous(breaks = format_breaks)
+```
