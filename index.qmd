@@ -5,6 +5,10 @@ execute:
   warning: false
 editor_options: 
   chunk_output_type: console
+format:
+  html:
+    fig-width: 8
+    fig-height: 5
 ---
 ```{r}
 #| echo: false
@@ -64,11 +68,11 @@ c_geom <- c(
 )
 
 c_geom_expl <- c(
-  "plots points",
-  "plots an area between points",
-  "creates columns barplot",
+  "plot points",
+  "plot an area between points",
+  "create columns barplot",
   "plot error bars",
-  "plots horizontal/vertical line"
+  "plot horizontal/vertical line"
 )
 
 c_geom_imp_settings <- c(
@@ -91,7 +95,7 @@ geom_kable <- data.frame(
   kable(col.names = geom_kable_colnames) |>
   kable_styling()
 ```
-The table below serves as a guide to which `_geoms` are useful.
+The table below serves as a guide as to which `_geoms` are useful.
 ```{r}
 #| echo: false
 
@@ -100,9 +104,8 @@ geom_kable
 
 
 ## Using Factors {#sec-factors}
-It is necessary to differentiate between different datasets if they are displayed within
-the same graph. This can be easily done by assigning factors to data points originating
-from different datasets. Using the mappings `colour = factor.variable` or `fill = factor.variable`
+It may be necessary to differentiate between different groups if they are displayed within
+the same graph. This can be easily done by assigning factors to data points belonging to different groups Using the mappings `colour = factor.variable` or `fill = factor.variable`
 in the `aes()` function leads to colouring of the data points according to their factor.
 A legend is added automatically.
 
@@ -112,7 +115,7 @@ ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, colour = Species)) +
 ```
 
 This is very powerful in settings during which data processing is performed. In the
-example, the confidence intervals and the fitted line of the different datasets are 
+example below, the confidence intervals and the fitted line of the different groups are 
 drawn by the same commands (`geom_ribbon()` and `geom_line()`, respectively), 
 while colouring the fit according to the `colour` mapping
 and the confidence interval according to the `fill` mapping.
@@ -137,7 +140,7 @@ ggplot(prediction_values_for_plot, aes(x = Sepal.Length,
 
 
 ## Changing the Appearance of the Plot
-`scale_` act on the appearance of the plot. They can change the way axes are displayed or how colors are applied to the plotted data, for example.
+`scale_` acts on the appearance of the plot. It can change the way axes are displayed or how colors are applied to the plotted data, for example.
 
 ### Changing the Axes
 Common functions to alter the axes are (for the x-axis, replace with y for the y-axis):
@@ -147,10 +150,10 @@ Common functions to alter the axes are (for the x-axis, replace with y for the y
 
 They take, among others, the following options:
 
-- `limits` range of values plotted
-- `breaks` ticks displayed
-- `expand` additional space before/after the plotted data
-- `guide` can add minor ticks, among others
+- `limits` - range of values plotted
+- `breaks` - ticks displayed
+- `expand` - additional space before/after the plotted data
+- `guide` - can add minor ticks, among others
 
 ```{r}
 library(ggprism)
@@ -189,3 +192,14 @@ plot_grid(g1, g2)
 ```
 
 ### Themes
+`theme_` allows to easily change the appearance of a plot using pre-defined settings. Available themes are:
+
+- `_gray()`
+- `_bw()`
+- `_linedraw()`
+- `_light()`
+- `_dark()`
+- `_minimal()`
+- `_classic()`
+
+These themes can be further modified, or new themes can be created, using the `theme()` function.
