@@ -7,8 +7,9 @@ editor_options:
   chunk_output_type: console
 format:
   html:
-    fig-width: 8
-    fig-height: 5
+    fig-align: center
+    fig-width: 5
+    fig-height: 3
 ---
 ```{r}
 #| echo: false
@@ -156,16 +157,16 @@ They take, among others, the following options:
 - `guide` - can add minor ticks, among others
 
 ```{r}
+#| fig-width: 7
+
 library(ggprism)
 g1 <- ggplot(cars, aes(x = speed, y = dist)) +
-  geom_point() +
-  ggtitle("g1")
+  geom_point()
 
 g2 <- ggplot(cars, aes(x = speed, y = dist)) +
   geom_point() +
   scale_x_continuous(limits = c(8, 16), breaks = seq(8, 16, 1)) + 
-  scale_y_log10(guide = 'prism_minor') +
-  ggtitle("g2")
+  scale_y_log10(guide = 'prism_minor')
 
 plot_grid(g1, g2)
 ```
@@ -173,6 +174,8 @@ plot_grid(g1, g2)
 ### Changing the Color Palette
 As seen in @sec-factors, ggplot2 automatically colors factors specified by `color` or `fill` using a pre-defined palette. To overwrite those standard palettes, the scales `_color_` and `_fill_` can be used, for which a lot of pre-defined color palettes exist. Providing custom color palettes can be done with `_color_manual` and `_fill_manual`, for which the palette needs to be provided in a `palette()` function. *For whatever reason, the assignment of the palette to its variable has to be done twice*.
 ```{r}
+#| fig-width: 8
+
 ggblack <- rgb(118, 113, 113, maxColorValue = 255) # gray
 gglime <- rgb(140, 198, 63, maxColorValue = 255) # lime
 ggred <- rgb(241, 89, 42, maxColorValue = 255) # red
@@ -205,6 +208,8 @@ plot_grid(g1, g2)
 These themes can be further modified, or new themes can be created, using the `theme()` function.
 
 ```{r}
+#| fig-width: 8
+
 g1 <- ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, colour = Species)) +
   geom_point()
 
@@ -222,7 +227,7 @@ It may be useful to save several `ggplot2` objects like `geom_`, `scale_`, and `
 changes <- list(
   geom_point(),
   theme_linedraw(),
-  ggtitle('scatter plot')
+  ggtitle('title of scatter plot')
 )
 
 ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, colour = Species)) +
