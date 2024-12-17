@@ -56,7 +56,8 @@ ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width)) +
   geom_point()
 ```
 
-### Important `_geoms()`
+### Important `geom_`
+
 ```{r}
 #| include: false
 
@@ -96,13 +97,22 @@ geom_kable <- data.frame(
   kable(col.names = geom_kable_colnames) |>
   kable_styling()
 ```
-The table below serves as a guide as to which `_geoms` are useful.
+The table below serves as a guide as to which `geom_` are useful.
 ```{r}
 #| echo: false
 
 geom_kable
 ```
 
+Below is a complete list of all available `geom_`
+```{r}
+#| echo: false
+#| tbl-align: center
+
+kable(data.frame('geom' = apropos("geom_")[-c(1,2,length(apropos("geom_")))])) |>
+  kable_styling() |>
+    scroll_box(height = "400px")
+```
 
 ## Using Factors {#sec-factors}
 It may be necessary to differentiate between different groups if they are displayed within
@@ -220,6 +230,7 @@ g2 <- ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, colour = Species)) +
 plot_grid(g1, g2)
 ```
 
+# Working with ggplot2 objects and functions
 
 ## Reusing ggplot2 objects
 It may be useful to save several `ggplot2` objects like `geom_`, `scale_`, and `theme_` to use them for multiple plots. This can be achieved by saving the objects in a `list` and adding it to `ggplot()` using the `+` sign.
