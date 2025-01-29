@@ -168,19 +168,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#ggplot2-basics" id="toc-ggplot2-basics" class="nav-link active" data-scroll-target="#ggplot2-basics">ggplot2 basics</a>
-  <ul class="collapse">
-  <li><a href="#plotting-data" id="toc-plotting-data" class="nav-link" data-scroll-target="#plotting-data">Plotting Data</a>
-  <ul class="collapse">
-  <li><a href="#important-_geoms" id="toc-important-_geoms" class="nav-link" data-scroll-target="#important-_geoms">Important <code>_geoms()</code></a></li>
-  </ul></li>
+  <li><a href="#ggplot2-basics" id="toc-ggplot2-basics" class="nav-link active" data-scroll-target="#ggplot2-basics">ggplot2 basics</a></li>
+  <li><a href="#plotting-data" id="toc-plotting-data" class="nav-link" data-scroll-target="#plotting-data">Plotting Data</a></li>
   <li><a href="#sec-factors" id="toc-sec-factors" class="nav-link" data-scroll-target="#sec-factors">Using Factors</a></li>
   <li><a href="#changing-the-appearance-of-the-plot" id="toc-changing-the-appearance-of-the-plot" class="nav-link" data-scroll-target="#changing-the-appearance-of-the-plot">Changing the Appearance of the Plot</a>
   <ul class="collapse">
   <li><a href="#changing-the-axes" id="toc-changing-the-axes" class="nav-link" data-scroll-target="#changing-the-axes">Changing the Axes</a></li>
   <li><a href="#changing-the-color-palette" id="toc-changing-the-color-palette" class="nav-link" data-scroll-target="#changing-the-color-palette">Changing the Color Palette</a></li>
+  <li><a href="#axes-labels-and-titles" id="toc-axes-labels-and-titles" class="nav-link" data-scroll-target="#axes-labels-and-titles">Axes, Labels, and Titles</a></li>
   <li><a href="#themes" id="toc-themes" class="nav-link" data-scroll-target="#themes">Themes</a></li>
   </ul></li>
+  <li><a href="#working-with-ggplot2-objects-and-functions" id="toc-working-with-ggplot2-objects-and-functions" class="nav-link" data-scroll-target="#working-with-ggplot2-objects-and-functions">Working with ggplot2 objects and functions</a>
+  <ul class="collapse">
+  <li><a href="#reusing-ggplot2-objects" id="toc-reusing-ggplot2-objects" class="nav-link" data-scroll-target="#reusing-ggplot2-objects">Reusing ggplot2 objects</a></li>
+  <li><a href="#defining-functions-to-work-with-ggplot2-options" id="toc-defining-functions-to-work-with-ggplot2-options" class="nav-link" data-scroll-target="#defining-functions-to-work-with-ggplot2-options">Defining functions to work with ggplot2 options</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -217,8 +218,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  geom_</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<section id="plotting-data" class="level2">
-<h2 class="anchored" data-anchor-id="plotting-data">Plotting Data</h2>
+</section>
+<section id="plotting-data" class="level1">
+<h1>Plotting Data</h1>
 <p>The data to be plotted can be provided in either the <code>ggplot()</code> function, which will forward it to the <code>geom_</code> functions, or in the <code>geom_</code> functions directly. In either way, the <code>data.frame</code> containing the data is specified as an argument directly, while the mapping function <code>aes()</code> contains information on which columns of the <code>data.frame</code> belong to which variable.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data.frame, <span class="fu">aes</span>(<span class="at">x =</span> independent.variable, <span class="at">y =</span> dependent.variable)) <span class="sc">+</span></span>
@@ -229,93 +231,214 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(iris, <span class="fu">aes</span>(<span class="at">x =</span> Sepal.Length, <span class="at">y =</span> Sepal.Width)) <span class="sc">+</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="480"></p>
 </div>
 </div>
-<section id="important-_geoms" class="level3">
-<h3 class="anchored" data-anchor-id="important-_geoms">Important <code>_geoms()</code></h3>
-<p>The table below serves as a guide to which <code>_geoms</code> are useful.</p>
-<div class="cell">
+<p>Below is a complete list of all available <code>geom_</code></p>
+<div class="cell" data-tbl-align="center">
 <div class="cell-output-display">
 
-<table class="table" style="margin-left: auto; margin-right: auto;">
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:400px; "><table class="table" style="margin-left: auto; margin-right: auto;">
  <thead>
   <tr>
-   <th style="text-align:left;"> geoms </th>
-   <th style="text-align:left;"> explanation </th>
-   <th style="text-align:left;"> important settings </th>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> geom </th>
   </tr>
  </thead>
 <tbody>
   <tr>
-   <td style="text-align:left;"> geom_point </td>
-   <td style="text-align:left;"> plots points </td>
-   <td style="text-align:left;"> size </td>
+   <td style="text-align:left;"> geom_bar </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> geom_ribbon </td>
-   <td style="text-align:left;"> plots an area between points </td>
-   <td style="text-align:left;"> alpha, linetype </td>
+   <td style="text-align:left;"> geom_bin_2d </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_bin2d </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_blank </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_boxplot </td>
   </tr>
   <tr>
    <td style="text-align:left;"> geom_col </td>
-   <td style="text-align:left;"> creates columns barplot </td>
-   <td style="text-align:left;"> position </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_contour </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_contour_filled </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_count </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_crossbar </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_curve </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_density </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_density_2d </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_density_2d_filled </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_density2d </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_density2d_filled </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_dotplot </td>
   </tr>
   <tr>
    <td style="text-align:left;"> geom_errorbar </td>
-   <td style="text-align:left;"> plot error bars </td>
-   <td style="text-align:left;"> width </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> geom_hline/_vline </td>
-   <td style="text-align:left;"> plots horizontal/vertical line </td>
-   <td style="text-align:left;"> intercept </td>
+   <td style="text-align:left;"> geom_errorbarh </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_freqpoly </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_function </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_hex </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_histogram </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_hline </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_jitter </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_label </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_line </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_linerange </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_map </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_path </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_point </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_pointrange </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_polygon </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_qq </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_qq_line </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_quantile </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_raster </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_rect </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_ribbon </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_rug </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_segment </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_sf </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_sf_label </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_sf_text </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_smooth </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_spoke </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_step </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_text </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_tile </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_violin </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> geom_vline </td>
   </tr>
 </tbody>
-</table>
+</table></div>
 
 </div>
 </div>
 </section>
-</section>
-<section id="sec-factors" class="level2">
-<h2 class="anchored" data-anchor-id="sec-factors">Using Factors</h2>
-<p>It is necessary to differentiate between different datasets if they are displayed within the same graph. This can be easily done by assigning factors to data points originating from different datasets. Using the mappings <code>colour = factor.variable</code> or <code>fill = factor.variable</code> in the <code>aes()</code> function leads to colouring of the data points according to their factor. A legend is added automatically.</p>
+<section id="sec-factors" class="level1">
+<h1>Using Factors</h1>
+<p>It may be necessary to differentiate between different groups if they are displayed within the same graph. This can be easily done by assigning different factors to data points belonging to different groups. Using the mappings <code>colour = factor.variable</code> or <code>fill = factor.variable</code>in the <code>aes()</code> function leads to colouring of the data points according to their factor. A legend is added automatically.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(iris, <span class="fu">aes</span>(<span class="at">x =</span> Sepal.Length, <span class="at">y =</span> Sepal.Width, <span class="at">colour =</span> Species)) <span class="sc">+</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="480"></p>
 </div>
 </div>
-<p>This is very powerful in settings during which data processing is performed. In the example, the confidence intervals and the fitted line of the different datasets are drawn by the same commands (<code>geom_ribbon()</code> and <code>geom_line()</code>, respectively), while colouring the fit according to the <code>colour</code> mapping and the confidence interval according to the <code>fill</code> mapping.</p>
+<p>This is very powerful in settings during which data processing is performed. In the example below, the confidence intervals and the fitted line of the different groups are drawn by the same commands (<code>geom_ribbon()</code> and <code>geom_line()</code>, respectively), while colouring the fit according to the <code>colour</code> mapping and the confidence interval according to the <code>fill</code> mapping.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># fit the data, perform prediction, join the data.frame with the corresponding</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># independent variables</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>prediction_values_for_plot <span class="ot">&lt;-</span> <span class="fu">lm</span>(Sepal.Width <span class="sc">~</span> Sepal.Length <span class="sc">*</span> Species, iris) <span class="sc">|&gt;</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">predict</span>(<span class="at">interval =</span> <span class="st">'confidence'</span>) <span class="sc">|&gt;</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">cbind</span>(iris)</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(prediction_values_for_plot, <span class="fu">aes</span>(<span class="at">x =</span> Sepal.Length, </span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>                                       <span class="at">y =</span> Sepal.Width, </span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>                                       <span class="at">ymin =</span> lwr, </span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>                                       <span class="at">ymax =</span> upr,</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>                                       <span class="at">colour =</span> Species, </span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>                                       <span class="at">fill =</span> Species)) <span class="sc">+</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">y =</span> fit), <span class="at">alpha =</span> <span class="fl">0.3</span>, <span class="at">linewidth =</span> <span class="dv">0</span>) <span class="sc">+</span></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> fit)) <span class="sc">+</span></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>prediction_values_for_plot <span class="ot">&lt;-</span> <span class="fu">lm</span>(Sepal.Width <span class="sc">~</span> Sepal.Length <span class="sc">*</span> Species, iris) <span class="sc">|&gt;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">predict</span>(<span class="at">interval =</span> <span class="st">'confidence'</span>) <span class="sc">|&gt;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">cbind</span>(iris)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(prediction_values_for_plot, <span class="fu">aes</span>(<span class="at">x =</span> Sepal.Length, </span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>                                       <span class="at">y =</span> Sepal.Width, </span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>                                       <span class="at">ymin =</span> lwr, </span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>                                       <span class="at">ymax =</span> upr,</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>                                       <span class="at">colour =</span> Species, </span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>                                       <span class="at">fill =</span> Species)) <span class="sc">+</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">y =</span> fit), <span class="at">alpha =</span> <span class="fl">0.3</span>, <span class="at">linewidth =</span> <span class="dv">0</span>) <span class="sc">+</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> fit)) <span class="sc">+</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="480"></p>
 </div>
 </div>
 </section>
-<section id="changing-the-appearance-of-the-plot" class="level2">
-<h2 class="anchored" data-anchor-id="changing-the-appearance-of-the-plot">Changing the Appearance of the Plot</h2>
-<p><code>scale_</code> act on the appearance of the plot. They can change the way axes are displayed or how colors are applied to the plotted data, for example.</p>
-<section id="changing-the-axes" class="level3">
-<h3 class="anchored" data-anchor-id="changing-the-axes">Changing the Axes</h3>
+<section id="changing-the-appearance-of-the-plot" class="level1">
+<h1>Changing the Appearance of the Plot</h1>
+<p><code>scale_</code> acts on the appearance of the plot. It can change the way axes are displayed or how colors are applied to the plotted data, for example.</p>
+<section id="changing-the-axes" class="level2">
+<h2 class="anchored" data-anchor-id="changing-the-axes">Changing the Axes</h2>
 <p>Common functions to alter the axes are (for the x-axis, replace with y for the y-axis):</p>
 <ul>
 <li><code>scale_x_continuous</code> for continuous values</li>
@@ -323,59 +446,144 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul>
 <p>They take, among others, the following options:</p>
 <ul>
-<li><code>limits</code> range of values plotted</li>
-<li><code>breaks</code> ticks displayed</li>
-<li><code>expand</code> additional space before/after the plotted data</li>
-<li><code>guide</code> can add minor ticks, among others</li>
+<li><code>limits</code> - range of values plotted</li>
+<li><code>breaks</code> - ticks displayed</li>
+<li><code>expand</code> - additional space before/after the plotted data</li>
+<li><code>guide</code> - can add minor ticks, among others</li>
 </ul>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggprism)</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>g1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(cars, <span class="fu">aes</span>(<span class="at">x =</span> speed, <span class="at">y =</span> dist)) <span class="sc">+</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"g1"</span>)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>g2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(cars, <span class="fu">aes</span>(<span class="at">x =</span> speed, <span class="at">y =</span> dist)) <span class="sc">+</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">8</span>, <span class="dv">16</span>), <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">8</span>, <span class="dv">16</span>, <span class="dv">1</span>)) <span class="sc">+</span> </span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_log10</span>(<span class="at">guide =</span> <span class="st">'prism_minor'</span>) <span class="sc">+</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"g2"</span>)</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_grid</span>(g1, g2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>g2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(cars, <span class="fu">aes</span>(<span class="at">x =</span> speed, <span class="at">y =</span> dist)) <span class="sc">+</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">8</span>, <span class="dv">16</span>), <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">8</span>, <span class="dv">16</span>, <span class="dv">1</span>)) <span class="sc">+</span> </span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_log10</span>(<span class="at">guide =</span> <span class="st">'prism_minor'</span>)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_grid</span>(g1, g2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
-<section id="changing-the-color-palette" class="level3">
-<h3 class="anchored" data-anchor-id="changing-the-color-palette">Changing the Color Palette</h3>
-<p>As seen in <a href="#sec-factors">Section&nbsp;1.2</a>, ggplot2 automatically colors factors specified by <code>color</code> or <code>fill</code> using a pre-defined palette. To overwrite those standard palettes, the scales <code>_color_</code> and <code>_fill_</code> can be used, for which a lot of pre-defined color palettes exist. Providing custom color palettes can be done with <code>_color_manual</code> and <code>_fill_manual</code>, for which the palette needs to be provided in a <code>palette()</code> function. <em>For whatever reason, the assignment of the palette to its variable has to be done twice</em>.</p>
+<section id="changing-the-color-palette" class="level2">
+<h2 class="anchored" data-anchor-id="changing-the-color-palette">Changing the Color Palette</h2>
+<p>As seen in <a href="#sec-factors">Section&nbsp;3</a>, ggplot2 automatically colors factors specified by <code>color</code> or <code>fill</code> using a pre-defined palette. Two ways of changing the color palette of <code>ggplot</code> exist.</p>
+<p>One way of changing the color palette is to change it globally via the <code>ggplot2.discrete.colour</code> option in <code>options()</code>. The colors are provided in a character vector by names or color hex codes.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>ggblack <span class="ot">&lt;-</span> <span class="fu">rgb</span>(<span class="dv">118</span>, <span class="dv">113</span>, <span class="dv">113</span>, <span class="at">maxColorValue =</span> <span class="dv">255</span>) <span class="co"># gray</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>gglime <span class="ot">&lt;-</span> <span class="fu">rgb</span>(<span class="dv">140</span>, <span class="dv">198</span>, <span class="dv">63</span>, <span class="at">maxColorValue =</span> <span class="dv">255</span>) <span class="co"># lime</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>ggred <span class="ot">&lt;-</span> <span class="fu">rgb</span>(<span class="dv">241</span>, <span class="dv">89</span>, <span class="dv">42</span>, <span class="at">maxColorValue =</span> <span class="dv">255</span>) <span class="co"># red</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>ggturquoise <span class="ot">&lt;-</span> <span class="fu">rgb</span>(<span class="dv">37</span>, <span class="dv">170</span>, <span class="dv">225</span>, <span class="at">maxColorValue =</span> <span class="dv">255</span>) <span class="co"># turqoise</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>ggpalette <span class="ot">&lt;-</span> <span class="fu">palette</span>(<span class="fu">c</span>(ggblack, gglime, ggred, ggturquoise))</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>ggpalette <span class="ot">&lt;-</span> <span class="fu">palette</span>(<span class="fu">c</span>(ggblack, gglime, ggred, ggturquoise))</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>g1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(iris, <span class="fu">aes</span>(<span class="at">x =</span> Sepal.Length, <span class="at">y =</span> Sepal.Width, <span class="at">colour =</span> Species)) <span class="sc">+</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>g2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(iris, <span class="fu">aes</span>(<span class="at">x =</span> Sepal.Length, <span class="at">y =</span> Sepal.Width, <span class="at">colour =</span> Species)) <span class="sc">+</span></span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> ggpalette)</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_grid</span>(g1, g2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">ggplot2.discrete.colour =</span> <span class="fu">c</span>(<span class="st">'red'</span>, <span class="st">'blue'</span>, <span class="st">'green'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Colors can also be changed on a per-plot basis using the scales <code>_color_</code> and <code>_fill_</code>, for which a lot of pre-defined color palettes exist. Providing custom color palettes can be done with <code>_color_manual</code> and <code>_fill_manual</code>, for which the palette needs to be provided in a character vector.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>ggblack <span class="ot">&lt;-</span> <span class="fu">rgb</span>(<span class="dv">118</span>, <span class="dv">113</span>, <span class="dv">113</span>, <span class="at">maxColorValue =</span> <span class="dv">255</span>) <span class="co"># gray</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>gglime <span class="ot">&lt;-</span> <span class="fu">rgb</span>(<span class="dv">140</span>, <span class="dv">198</span>, <span class="dv">63</span>, <span class="at">maxColorValue =</span> <span class="dv">255</span>) <span class="co"># lime</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>ggred <span class="ot">&lt;-</span> <span class="fu">rgb</span>(<span class="dv">241</span>, <span class="dv">89</span>, <span class="dv">42</span>, <span class="at">maxColorValue =</span> <span class="dv">255</span>) <span class="co"># red</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>ggturquoise <span class="ot">&lt;-</span> <span class="fu">rgb</span>(<span class="dv">37</span>, <span class="dv">170</span>, <span class="dv">225</span>, <span class="at">maxColorValue =</span> <span class="dv">255</span>) <span class="co"># turqoise</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>ggpalette <span class="ot">&lt;-</span> <span class="fu">c</span>(ggblack, gglime, ggred, ggturquoise)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>g1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(iris, <span class="fu">aes</span>(<span class="at">x =</span> Sepal.Length, <span class="at">y =</span> Sepal.Width, <span class="at">colour =</span> Species)) <span class="sc">+</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>g2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(iris, <span class="fu">aes</span>(<span class="at">x =</span> Sepal.Length, <span class="at">y =</span> Sepal.Width, <span class="at">colour =</span> Species)) <span class="sc">+</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> ggpalette)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_grid</span>(g1, g2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="768"></p>
 </div>
 </div>
 </section>
-<section id="themes" class="level3">
-<h3 class="anchored" data-anchor-id="themes">Themes</h3>
-
-
+<section id="axes-labels-and-titles" class="level2">
+<h2 class="anchored" data-anchor-id="axes-labels-and-titles">Axes, Labels, and Titles</h2>
+<p>Axes can be labeled using the functions <code>xlab()</code> and <code>ylab()</code>, and a title can be provided by the <code>ggtitle()</code> function. The same can be achieved with the <code>labs()</code> function, which additionally provides subtitles, captions, and legend titles, among other.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(iris, <span class="fu">aes</span>(<span class="at">x =</span> Sepal.Width, <span class="at">y =</span> Sepal.Length, <span class="at">colour =</span> Species, <span class="at">pch =</span> Petal.Length <span class="sc">&gt;</span> <span class="dv">3</span>)) <span class="sc">+</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">'Some General Description'</span>,</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">'Maybe some more detailed description'</span>,</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">'This label can be used to indicate the source'</span>,</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">pch =</span> <span class="st">'Change aesthetic </span><span class="sc">\n</span><span class="st">name in legend'</span>,</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">'Length of Sepal'</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="480"></p>
+</div>
+</div>
 </section>
+<section id="themes" class="level2">
+<h2 class="anchored" data-anchor-id="themes">Themes</h2>
+<p><code>theme_</code> allows to easily change the appearance of a plot using pre-defined settings. Available themes are:</p>
+<ul>
+<li><code>_gray()</code></li>
+<li><code>_bw()</code></li>
+<li><code>_linedraw()</code></li>
+<li><code>_light()</code></li>
+<li><code>_dark()</code></li>
+<li><code>_minimal()</code></li>
+<li><code>_classic()</code></li>
+</ul>
+<p>These themes can be further modified, or new themes can be created, using the <code>theme()</code> function.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>g1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(iris, <span class="fu">aes</span>(<span class="at">x =</span> Sepal.Length, <span class="at">y =</span> Sepal.Width, <span class="at">colour =</span> Species)) <span class="sc">+</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>g2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(iris, <span class="fu">aes</span>(<span class="at">x =</span> Sepal.Length, <span class="at">y =</span> Sepal.Width, <span class="at">colour =</span> Species)) <span class="sc">+</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_linedraw</span>()</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_grid</span>(g1, g2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="768"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="working-with-ggplot2-objects-and-functions" class="level1">
+<h1>Working with ggplot2 objects and functions</h1>
+<section id="reusing-ggplot2-objects" class="level2">
+<h2 class="anchored" data-anchor-id="reusing-ggplot2-objects">Reusing ggplot2 objects</h2>
+<p>It may be useful to save several <code>ggplot2</code> objects like <code>geom_</code>, <code>scale_</code>, and <code>theme_</code> to use them for multiple plots. This can be achieved by saving the objects in a <code>list</code> and adding it to <code>ggplot()</code> using the <code>+</code> sign.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>changes <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(),</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_linedraw</span>(),</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">'title of scatter plot'</span>)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(iris, <span class="fu">aes</span>(<span class="at">x =</span> Sepal.Length, <span class="at">y =</span> Sepal.Width, <span class="at">colour =</span> Species)) <span class="sc">+</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  changes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="480"></p>
+</div>
+</div>
+</section>
+<section id="defining-functions-to-work-with-ggplot2-options" class="level2">
+<h2 class="anchored" data-anchor-id="defining-functions-to-work-with-ggplot2-options">Defining functions to work with ggplot2 options</h2>
+<p>Some options of <code>ggplot2</code> functions allow a function as their value. The required input values are defined in the help file of the function.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stringr) <span class="co"># for str_wrap</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">description =</span> <span class="fu">c</span>(<span class="st">"a very long text that requires linebreaks"</span>, </span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>                                   <span class="st">'another text'</span>), </span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>                   <span class="at">val =</span> <span class="fu">c</span>(<span class="dv">30</span>, <span class="dv">300</span>))</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>format_label <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">str_wrap</span>(x, <span class="at">width =</span> <span class="dv">20</span>)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>format_breaks <span class="ot">&lt;-</span> <span class="cf">function</span>(vec) <span class="fu">seq</span>(vec[<span class="dv">1</span>], vec[<span class="dv">2</span>], (vec[<span class="dv">2</span>]<span class="sc">-</span>vec[<span class="dv">1</span>])<span class="sc">/</span><span class="dv">5</span>)</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data, <span class="fu">aes</span>(<span class="at">x =</span> description, <span class="at">y =</span> val)) <span class="sc">+</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_discrete</span>(<span class="at">labels =</span> format_label) <span class="sc">+</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> format_breaks)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="480"></p>
+</div>
+</div>
+
+
 </section>
 </section>
 
