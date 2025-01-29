@@ -1,1 +1,8 @@
 /* css styles */
+.img-fluid {
+  display: block;            /* Ensures the figure behaves as a block-level element */
+  margin: 0 auto;            /* Centers the figure horizontally */
+  max-width: 100%;           /* Prevents the figure from exceeding the container width */
+  height: auto;              /* Maintains aspect ratio */
+  text-align: center;        /* Ensures inner content is also centered */
+}

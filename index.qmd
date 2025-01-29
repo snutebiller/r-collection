@@ -7,8 +7,9 @@ editor_options:
   chunk_output_type: console
 format:
   html:
-    fig-width: 8
-    fig-height: 5
+    fig-align: center
+    fig-width: 5
+    fig-height: 3
 ---
 ```{r}
 #| echo: false
@@ -35,7 +36,7 @@ ggplot() +
   geom_
 ```
 
-## Plotting Data
+# Plotting Data
 The data to be plotted can be provided in either the `ggplot()` function, which will forward it
 to the `geom_` functions, or in the `geom_` functions directly. In either way,
 the `data.frame` containing the data is specified as an argument directly, while the mapping function
@@ -55,59 +56,19 @@ ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width)) +
   geom_point()
 ```
 
-### Important `_geoms()`
-```{r}
-#| include: false
-
-c_geom <- c(
-  "geom_point",
-  "geom_ribbon",
-  "geom_col",
-  "geom_errorbar",
-  "geom_hline/_vline"
-)
-
-c_geom_expl <- c(
-  "plot points",
-  "plot an area between points",
-  "create columns barplot",
-  "plot error bars",
-  "plot horizontal/vertical line"
-)
-
-c_geom_imp_settings <- c(
-  "size",
-  "alpha, linetype",
-  "position",
-  "width",
-  "intercept"
-)
-geom_kable_colnames <- c(
-  "geoms",
-  "explanation",
-  "important settings"
-)
-geom_kable <- data.frame(
-  geoms = c_geom,
-  explanations = c_geom_expl,
-  settings = c_geom_imp_settings
-) |>
-  kable(col.names = geom_kable_colnames) |>
-  kable_styling()
-```
-The table below serves as a guide as to which `_geoms` are useful.
+Below is a complete list of all available `geom_`
 ```{r}
 #| echo: false
+#| tbl-align: center
 
-geom_kable
+kable(data.frame('geom' = apropos("geom_")[-c(1,2,length(apropos("geom_")))])) |>
+  kable_styling() |>
+    scroll_box(height = "400px")
 ```
 
-
-## Using Factors {#sec-factors}
+# Using Factors {#sec-factors}
 It may be necessary to differentiate between different groups if they are displayed within
-the same graph. This can be easily done by assigning factors to data points belonging to different groups Using the mappings `colour = factor.variable` or `fill = factor.variable`
-in the `aes()` function leads to colouring of the data points according to their factor.
-A legend is added automatically.
+the same graph. This can be easily done by assigning different factors to data points belonging to different groups. Using the mappings `colour = factor.variable` or `fill = factor.variable`in the `aes()` function leads to colouring of the data points according to their factor. A legend is added automatically.
 
 ```{r}
 ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, colour = Species)) +
@@ -121,8 +82,6 @@ while colouring the fit according to the `colour` mapping
 and the confidence interval according to the `fill` mapping.
 
 ```{r}
-# fit the data, perform prediction, join the data.frame with the corresponding
-# independent variables
 prediction_values_for_plot <- lm(Sepal.Width ~ Sepal.Length * Species, iris) |>
                   predict(interval = 'confidence') |>
                     cbind(iris)
@@ -139,10 +98,10 @@ ggplot(prediction_values_for_plot, aes(x = Sepal.Length,
 ```
 
 
-## Changing the Appearance of the Plot
+# Changing the Appearance of the Plot
 `scale_` acts on the appearance of the plot. It can change the way axes are displayed or how colors are applied to the plotted data, for example.
 
-### Changing the Axes
+## Changing the Axes
 Common functions to alter the axes are (for the x-axis, replace with y for the y-axis):
 
 - `scale_x_continuous` for continuous values
@@ -156,30 +115,39 @@ They take, among others, the following options:
 - `guide` - can add minor ticks, among others
 
 ```{r}
+#| fig-width: 7
+
 library(ggprism)
 g1 <- ggplot(cars, aes(x = speed, y = dist)) +
-  geom_point() +
-  ggtitle("g1")
+  geom_point()
 
 g2 <- ggplot(cars, aes(x = speed, y = dist)) +
   geom_point() +
   scale_x_continuous(limits = c(8, 16), breaks = seq(8, 16, 1)) + 
-  scale_y_log10(guide = 'prism_minor') +
-  ggtitle("g2")
+  scale_y_log10(guide = 'prism_minor')
 
 plot_grid(g1, g2)
 ```
 
-### Changing the Color Palette
-As seen in @sec-factors, ggplot2 automatically colors factors specified by `color` or `fill` using a pre-defined palette. To overwrite those standard palettes, the scales `_color_` and `_fill_` can be used, for which a lot of pre-defined color palettes exist. Providing custom color palettes can be done with `_color_manual` and `_fill_manual`, for which the palette needs to be provided in a `palette()` function. *For whatever reason, the assignment of the palette to its variable has to be done twice*.
+## Changing the Color Palette
+As seen in @sec-factors, ggplot2 automatically colors factors specified by `color` or `fill` using a pre-defined palette. Two ways of changing the color palette of `ggplot` exist.
+
+One way of changing the color palette is to change it globally via the `ggplot2.discrete.colour` option in `options()`. The colors are provided in a character vector by names or color hex codes.
 ```{r}
+#| eval: false
+options(ggplot2.discrete.colour = c('red', 'blue', 'green'))
+```
+
+
+Colors can also be changed on a per-plot basis using the scales `_color_` and `_fill_`, for which a lot of pre-defined color palettes exist. Providing custom color palettes can be done with `_color_manual` and `_fill_manual`, for which the palette needs to be provided in a character vector.
+```{r}
+#| fig-width: 8
+
 ggblack <- rgb(118, 113, 113, maxColorValue = 255) # gray
 gglime <- rgb(140, 198, 63, maxColorValue = 255) # lime
 ggred <- rgb(241, 89, 42, maxColorValue = 255) # red
 ggturquoise <- rgb(37, 170, 225, maxColorValue = 255) # turqoise
-
-ggpalette <- palette(c(ggblack, gglime, ggred, ggturquoise))
-ggpalette <- palette(c(ggblack, gglime, ggred, ggturquoise))
+ggpalette <- c(ggblack, gglime, ggred, ggturquoise)
 
 g1 <- ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, colour = Species)) +
   geom_point()
@@ -191,7 +159,25 @@ g2 <- ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, colour = Species)) +
 plot_grid(g1, g2)
 ```
 
-### Themes
+## Axes, Labels, and Titles
+Axes can be labeled using the functions `xlab()` and `ylab()`, and a title can be provided by the `ggtitle()` function. The same can be achieved with the `labs()` function, which additionally provides subtitles, captions, and legend titles, among other.
+
+```{r}
+
+ggplot(iris, aes(x = Sepal.Width, y = Sepal.Length, colour = Species, pch = Petal.Length > 3)) +
+  geom_point() +
+  labs(
+    title = 'Some General Description',
+    subtitle = 'Maybe some more detailed description',
+    caption = 'This label can be used to indicate the source',
+    pch = 'Change aesthetic \nname in legend',
+    y = 'Length of Sepal'
+  )
+```
+
+
+
+## Themes
 `theme_` allows to easily change the appearance of a plot using pre-defined settings. Available themes are:
 
 - `_gray()`
@@ -205,6 +191,8 @@ plot_grid(g1, g2)
 These themes can be further modified, or new themes can be created, using the `theme()` function.
 
 ```{r}
+#| fig-width: 8
+
 g1 <- ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, colour = Species)) +
   geom_point()
 
@@ -215,6 +203,7 @@ g2 <- ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, colour = Species)) +
 plot_grid(g1, g2)
 ```
 
+# Working with ggplot2 objects and functions
 
 ## Reusing ggplot2 objects
 It may be useful to save several `ggplot2` objects like `geom_`, `scale_`, and `theme_` to use them for multiple plots. This can be achieved by saving the objects in a `list` and adding it to `ggplot()` using the `+` sign.
@@ -222,7 +211,7 @@ It may be useful to save several `ggplot2` objects like `geom_`, `scale_`, and `
 changes <- list(
   geom_point(),
   theme_linedraw(),
-  ggtitle('scatter plot')
+  ggtitle('title of scatter plot')
 )
 
 ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, colour = Species)) +
