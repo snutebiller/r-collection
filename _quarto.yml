@@ -9,6 +9,8 @@ website:
       - href: index.qmd
         text: ggplot2
       - regression.qmd
+      - href: multivariate_statistics.qmd
+        text: multivariate statistics
 
 format:
   html:

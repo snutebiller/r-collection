@@ -4,41 +4,62 @@
     "href": "index.html#changing-the-axes",
     "title": "ggplot2",
     "section": "Changing the Axes",
-    "text": "Changing the Axes\nCommon functions to alter the axes are (for the x-axis, replace with y for the y-axis):\n\nscale_x_continuous for continuous values\nscale_x_log10 for log-transforming the axis (not the values themselves)\n\nThey take, among others, the following options:\n\nlimits - range of values plotted\nbreaks - ticks displayed\nexpand - additional space before/after the plotted data\nguide - can add minor ticks, among others\n\n\nlibrary(ggprism)\ng1 <- ggplot(cars, aes(x = speed, y = dist)) +\n  geom_point()\n\ng2 <- ggplot(cars, aes(x = speed, y = dist)) +\n  geom_point() +\n  scale_x_continuous(limits = c(8, 16), breaks = seq(8, 16, 1)) + \n  scale_y_log10(guide = 'prism_minor')\n\nplot_grid(g1, g2)"
+    "text": "Changing the Axes\nCommon functions to alter the axes are (for the x-axis, replace with y for the y-axis):\n\nscale_x_continuous for continuous values\nscale_x_log10 for log-transforming the axis (not the values themselves)\n\nThey take, among others, the following options:\n\nlimits - range of values plotted\nbreaks - ticks displayed\nexpand - additional space before/after the plotted data\nguide - can add minor ticks, among others\n\n\nlibrary(ggprism)\ng1 &lt;- ggplot(cars, aes(x = speed, y = dist)) +\n  geom_point()\n\ng2 &lt;- ggplot(cars, aes(x = speed, y = dist)) +\n  geom_point() +\n  scale_x_continuous(limits = c(8, 16), breaks = seq(8, 16, 1)) + \n  scale_y_log10(guide = 'prism_minor')\n\nplot_grid(g1, g2)"
   },
   {
     "objectID": "index.html#changing-the-color-palette",
     "href": "index.html#changing-the-color-palette",
     "title": "ggplot2",
     "section": "Changing the Color Palette",
-    "text": "Changing the Color Palette\nAs seen in Section 3, ggplot2 automatically colors factors specified by color or fill using a pre-defined palette. Two ways of changing the color palette of ggplot exist.\nOne way of changing the color palette is to change it globally via the ggplot2.discrete.colour option in options(). The colors are provided in a character vector by names or color hex codes.\n\noptions(ggplot2.discrete.colour = c('red', 'blue', 'green'))\n\nColors can also be changed on a per-plot basis using the scales _color_ and _fill_, for which a lot of pre-defined color palettes exist. Providing custom color palettes can be done with _color_manual and _fill_manual, for which the palette needs to be provided in a character vector.\n\nggblack <- rgb(118, 113, 113, maxColorValue = 255) # gray\ngglime <- rgb(140, 198, 63, maxColorValue = 255) # lime\nggred <- rgb(241, 89, 42, maxColorValue = 255) # red\nggturquoise <- rgb(37, 170, 225, maxColorValue = 255) # turqoise\nggpalette <- c(ggblack, gglime, ggred, ggturquoise)\n\ng1 <- ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, colour = Species)) +\n  geom_point()\n\ng2 <- ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, colour = Species)) +\n  geom_point() +\n  scale_color_manual(values = ggpalette)\n\nplot_grid(g1, g2)"
+    "text": "Changing the Color Palette\nAs seen in Section 3, ggplot2 automatically colors factors specified by color or fill using a pre-defined palette. Two ways of changing the color palette of ggplot exist.\nOne way of changing the color palette is to change it globally via the ggplot2.discrete.colour option in options(). The colors are provided in a character vector by names or color hex codes.\n\noptions(ggplot2.discrete.colour = c('red', 'blue', 'green'))\n\nColors can also be changed on a per-plot basis using the scales _color_ and _fill_, for which a lot of pre-defined color palettes exist. Providing custom color palettes can be done with _color_manual and _fill_manual, for which the palette needs to be provided in a character vector.\n\nggblack &lt;- rgb(118, 113, 113, maxColorValue = 255) # gray\ngglime &lt;- rgb(140, 198, 63, maxColorValue = 255) # lime\nggred &lt;- rgb(241, 89, 42, maxColorValue = 255) # red\nggturquoise &lt;- rgb(37, 170, 225, maxColorValue = 255) # turqoise\nggpalette &lt;- c(ggblack, gglime, ggred, ggturquoise)\n\ng1 &lt;- ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, colour = Species)) +\n  geom_point()\n\ng2 &lt;- ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, colour = Species)) +\n  geom_point() +\n  scale_color_manual(values = ggpalette)\n\nplot_grid(g1, g2)"
   },
   {
     "objectID": "index.html#axes-labels-and-titles",
     "href": "index.html#axes-labels-and-titles",
     "title": "ggplot2",
     "section": "Axes, Labels, and Titles",
-    "text": "Axes, Labels, and Titles\nAxes can be labeled using the functions xlab() and ylab(), and a title can be provided by the ggtitle() function. The same can be achieved with the labs() function, which additionally provides subtitles, captions, and legend titles, among other.\n\nggplot(iris, aes(x = Sepal.Width, y = Sepal.Length, colour = Species, pch = Petal.Length > 3)) +\n  geom_point() +\n  labs(\n    title = 'Some General Description',\n    subtitle = 'Maybe some more detailed description',\n    caption = 'This label can be used to indicate the source',\n    pch = 'Change aesthetic \\nname in legend',\n    y = 'Length of Sepal'\n  )"
+    "text": "Axes, Labels, and Titles\nAxes can be labeled using the functions xlab() and ylab(), and a title can be provided by the ggtitle() function. The same can be achieved with the labs() function, which additionally provides subtitles, captions, and legend titles, among other.\n\nggplot(iris, aes(x = Sepal.Width, y = Sepal.Length, colour = Species, pch = Petal.Length &gt; 3)) +\n  geom_point() +\n  labs(\n    title = 'Some General Description',\n    subtitle = 'Maybe some more detailed description',\n    caption = 'This label can be used to indicate the source',\n    pch = 'Change aesthetic \\nname in legend',\n    y = 'Length of Sepal'\n  )"
   },
   {
     "objectID": "index.html#themes",
     "href": "index.html#themes",
     "title": "ggplot2",
     "section": "Themes",
-    "text": "Themes\ntheme_ allows to easily change the appearance of a plot using pre-defined settings. Available themes are:\n\n_gray()\n_bw()\n_linedraw()\n_light()\n_dark()\n_minimal()\n_classic()\n\nThese themes can be further modified, or new themes can be created, using the theme() function.\n\ng1 <- ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, colour = Species)) +\n  geom_point()\n\ng2 <- ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, colour = Species)) +\n  geom_point() +\n  theme_linedraw()\n\nplot_grid(g1, g2)"
+    "text": "Themes\ntheme_ allows to easily change the appearance of a plot using pre-defined settings. Available themes are:\n\n_gray()\n_bw()\n_linedraw()\n_light()\n_dark()\n_minimal()\n_classic()\n\nThese themes can be further modified, or new themes can be created, using the theme() function.\n\ng1 &lt;- ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, colour = Species)) +\n  geom_point()\n\ng2 &lt;- ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, colour = Species)) +\n  geom_point() +\n  theme_linedraw()\n\nplot_grid(g1, g2)"
   },
   {
     "objectID": "index.html#reusing-ggplot2-objects",
     "href": "index.html#reusing-ggplot2-objects",
     "title": "ggplot2",
     "section": "Reusing ggplot2 objects",
-    "text": "Reusing ggplot2 objects\nIt may be useful to save several ggplot2 objects like geom_, scale_, and theme_ to use them for multiple plots. This can be achieved by saving the objects in a list and adding it to ggplot() using the + sign.\n\nchanges <- list(\n  geom_point(),\n  theme_linedraw(),\n  ggtitle('title of scatter plot')\n)\n\nggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, colour = Species)) +\n  changes"
+    "text": "Reusing ggplot2 objects\nIt may be useful to save several ggplot2 objects like geom_, scale_, and theme_ to use them for multiple plots. This can be achieved by saving the objects in a list and adding it to ggplot() using the + sign.\n\nchanges &lt;- list(\n  geom_point(),\n  theme_linedraw(),\n  ggtitle('title of scatter plot')\n)\n\nggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, colour = Species)) +\n  changes"
   },
   {
     "objectID": "index.html#defining-functions-to-work-with-ggplot2-options",
     "href": "index.html#defining-functions-to-work-with-ggplot2-options",
     "title": "ggplot2",
     "section": "Defining functions to work with ggplot2 options",
-    "text": "Defining functions to work with ggplot2 options\nSome options of ggplot2 functions allow a function as their value. The required input values are defined in the help file of the function.\n\nlibrary(stringr) # for str_wrap\n\ndata <- data.frame(description = c(\"a very long text that requires linebreaks\", \n                                   'another text'), \n                   val = c(30, 300))\n\nformat_label <- function(x) str_wrap(x, width = 20)\nformat_breaks <- function(vec) seq(vec[1], vec[2], (vec[2]-vec[1])/5)\n\nggplot(data, aes(x = description, y = val)) +\n  geom_col() +\n  coord_flip() +\n  scale_x_discrete(labels = format_label) +\n  scale_y_continuous(breaks = format_breaks)"
+    "text": "Defining functions to work with ggplot2 options\nSome options of ggplot2 functions allow a function as their value. The required input values are defined in the help file of the function.\n\nlibrary(stringr) # for str_wrap\n\ndata &lt;- data.frame(description = c(\"a very long text that requires linebreaks\", \n                                   'another text'), \n                   val = c(30, 300))\n\nformat_label &lt;- function(x) str_wrap(x, width = 20)\nformat_breaks &lt;- function(vec) seq(vec[1], vec[2], (vec[2]-vec[1])/5)\n\nggplot(data, aes(x = description, y = val)) +\n  geom_col() +\n  coord_flip() +\n  scale_x_discrete(labels = format_label) +\n  scale_y_continuous(breaks = format_breaks)"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "ggplot2",
+    "section": "",
+    "text": "A ggplot2 is initiated by the ggplot() command. When called on its own, it produces a graph without any data points. It is used to define options that will be forwarded to the functions responsible for adding data.\nA ggplot consists of layers that add graphical elements to the final plot. Layers are functions that begin with geom_ and define the type of plot. Examples are geom_point and geom_col, which create scatter and bar plots, respectively.\nThe general structure is as follows\n\nggplot() +\n  geom_"
+  },
+  {
+    "objectID": "multivariate_statistics.html",
+    "href": "multivariate_statistics.html",
+    "title": "multivariate statistics",
+    "section": "",
+    "text": "This page is based on the lecture Applied Multivariate Statistics (401-0102-00L) held by Fabio Sigrist at ETH Zurich."
+  },
+  {
+    "objectID": "multivariate_statistics.html#factor-model",
+    "href": "multivariate_statistics.html#factor-model",
+    "title": "multivariate statistics",
+    "section": "Factor Model",
+    "text": "Factor Model\nThe factor model in matrix notation is as follows \\[\nX = \\Lambda f + u\n\\] in which\n\n\\(X \\in \\mathbb{R}^q\\) are the observed variables,\n\\(\\Lambda\\) is a \\(q\\times k\\) matrix containing the factor loadings,\n\\(f \\in \\mathbb{R}^k\\) are the latent/common factors,\n\\(u \\in \\mathbb{R}^q\\) are the specific factors.\n\n\\(X\\), \\(u\\), and \\(f\\) are random vectors, while \\(\\Lambda\\) is constant. It is important to note that \\(f\\) is not observed, so \\(\\Lambda\\) and \\(u\\) cannot be estimated with a least squares approach (in contrast to a regression model).\nA number of things are assumed\n\n\\(E(u) = 0\\)\n\\(\\mathrm{Cov}(u) = \\Psi\\), a diagonal matrix. The specific factors are uncorrelated.\n\\(\\mathrm{Cov}(f_l, u_j) = 0\\), the common and specific factors are uncorrelated.\n\\(E(X) = 0\\), the data is mean-centered.\n\\(E(f) = 0\\), \\(\\mathrm{Cov}(f) = I\\), latent factors are standardized with a mean of zero, and a variance of one. They are uncorrelated.\n\nThese assumptions imply that the common factors and the observed variables are uncorrelated. The correlation is established by the latent factors \\(\\Lambda\\).\n\\[\\begin{align*}\n\\Sigma &= \\mathrm{Cov}(\\Lambda f+u) \\\\\n&= \\mathrm{Cov}(\\Lambda f) + \\mathrm{Cov}(u) \\\\\n&= \\Lambda\\mathrm{Cov}(f)\\Lambda^T+\\Psi\\\\\n&= \\Lambda\\Lambda^T + \\Psi\\\\\n\\end{align*}\\]\nWriting as scalars, this equals \\[\n\\sigma^2_j = \\Sigma_{l=1}^k \\lambda^2_{jl} + \\psi_j = h_j^2 + \\psi_j\n\\]\nin which \\(h_j^2\\) is the communality, the variance resulting from the latent factors, and \\(\\psi_j\\) the specific variance, that is not shared among the observed variables. If the above expression holds, then the factor model holds for \\(X\\)."
   }
 ]

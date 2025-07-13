@@ -1,0 +1,54 @@
+---
+title: "multivariate statistics"
+execute:
+  echo: true
+  warning: false
+format:
+  html:
+    fig-align: center
+    fig-width: 5
+    fig-height: 3
+---
+\newcommand\Cov{\mathrm{Cov}}
+This page is based on the lecture Applied Multivariate Statistics (401-0102-00L) held by Fabio Sigrist at ETH Zurich.
+
+# Factor Analysis
+Factor analysis serves to find underlying latent factors to observed variables. This is useful for cases in which the variable of interest cannot be measured directly (e.g. intelligence, social class) but is represented by some proxy variable (e.g. test scores, occupation and education).
+
+## Factor Model
+The factor model in matrix notation is as follows
+$$
+X = \Lambda f + u
+$$
+in which
+
+* $X \in \mathbb{R}^q$ are the observed variables,
+* $\Lambda$ is a $q\times k$ matrix containing the factor loadings,
+* $f \in \mathbb{R}^k$ are the latent/common factors,
+* $u \in \mathbb{R}^q$ are the specific factors.
+
+$X$, $u$, and $f$ are random vectors, while $\Lambda$ is constant. It is important to note that $f$ is not observed, so $\Lambda$ and $u$ cannot be estimated with a least squares approach (in contrast to a regression model).
+
+A number of things are assumed
+
+* $E(u) = 0$
+* $\Cov (u) = \Psi$, a diagonal matrix. The specific factors are uncorrelated.
+* $\Cov (f_l, u_j) = 0$, the common and specific factors are uncorrelated.
+* $E(X) = 0$, the data is mean-centered.
+* $E(f) = 0$, $\Cov (f) = I$, latent factors are standardized with a mean of zero, and a variance of one. They are uncorrelated.
+
+These assumptions imply that the common factors and the observed variables are uncorrelated. The correlation is established by the latent factors $\Lambda$.
+
+\begin{align*}
+\Sigma &= \Cov(\Lambda f+u) \\
+&= \Cov(\Lambda f) + \Cov(u) \\
+&= \Lambda\Cov(f)\Lambda^T+\Psi\\
+&= \Lambda\Lambda^T + \Psi\\
+\end{align*}
+
+Writing as scalars, this equals
+$$
+\sigma^2_j = \Sigma_{l=1}^k \lambda^2_{jl} + \psi_j = h_j^2 + \psi_j
+$$
+
+in which $h_j^2$ is the communality, the variance resulting from the latent factors, and $\psi_j$ the specific variance, that is not shared among the observed variables. If the above expression holds, then the factor model holds for $X$. 
