@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.6.42">
+<meta name="generator" content="quarto-1.5.57">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>multivariate statistics – r-collection</title>
+<title>Multivariate Statistics – r-collection</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -35,10 +35,10 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-54ebed522ef0dc2f427e72bc89b6c217.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -145,7 +145,13 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#factor-analysis" id="toc-factor-analysis" class="nav-link active" data-scroll-target="#factor-analysis">Factor Analysis</a>
+  <li><a href="#principal-component-analysis" id="toc-principal-component-analysis" class="nav-link active" data-scroll-target="#principal-component-analysis">Principal Component Analysis</a>
+  <ul class="collapse">
+  <li><a href="#model-definition" id="toc-model-definition" class="nav-link" data-scroll-target="#model-definition">Model Definition</a></li>
+  <li><a href="#computation" id="toc-computation" class="nav-link" data-scroll-target="#computation">Computation</a></li>
+  <li><a href="#properties" id="toc-properties" class="nav-link" data-scroll-target="#properties">Properties</a></li>
+  </ul></li>
+  <li><a href="#factor-analysis" id="toc-factor-analysis" class="nav-link" data-scroll-target="#factor-analysis">Factor Analysis</a>
   <ul class="collapse">
   <li><a href="#factor-model" id="toc-factor-model" class="nav-link" data-scroll-target="#factor-model">Factor Model</a></li>
   </ul></li>
@@ -157,7 +163,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">multivariate statistics</h1>
+<h1 class="title">Multivariate Statistics</h1>
 </div>
 
 
@@ -174,7 +180,46 @@ window.Quarto = {
 </header>
 
 
-<p>This page is based on the lecture Applied Multivariate Statistics (401-0102-00L) held by Fabio Sigrist at ETH Zurich.</p>
+<p>This page is based on the lecture Applied Multivariate Statistics <a href="https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?semkez=2025S&amp;ansicht=KATALOGDATEN&amp;lerneinheitId=187848&amp;lang=en">401-0102-00L</a> held by Fabio Sigrist at ETH Zurich.</p>
+<section id="principal-component-analysis" class="level1">
+<h1>Principal Component Analysis</h1>
+<p>Principal component analysis (PCA) aims at reducing a large number of variables to a smaller number while preserving as much variation as possible. This can be useful for visualizing data, but also to reduce the computational burden for other statistical techniques as well as simplifying regression problems by reducing collinearity.</p>
+<section id="model-definition" class="level2">
+<h2 class="anchored" data-anchor-id="model-definition">Model Definition</h2>
+<p>The idea is to transform the data matrix <span class="math inline">\(\pmb{X} \in \mathbb{R}^{n\times q}\)</span> with the loadings matrix <span class="math inline">\(\pmb{A} \in \mathbb{R}^{q\times q}\)</span> such that the transformed values <span class="math inline">\(\pmb{Y} \in \mathbb{R}^{n\times q}\)</span>, called scores, have maximal variance along the axes. <span class="math display">\[
+\pmb{Y} = \pmb{X}\pmb{A}
+\]</span> The k-th column in <span class="math inline">\(\pmb{Y}\)</span> and <span class="math inline">\(\pmb{A}\)</span> correspond to the <em>scores</em> and <em>loadings</em> of the k-th principle component, respectively. The loadings of each component <span class="math inline">\(k\)</span> are normalized <span class="math display">\[
+\Sigma_{j=1}^q a_{jk}^2 = 1
+\]</span> and the mean of each variable is zero. This can be achieved by subtracting the mean of the data. <span class="math display">\[
+E(X_1) = \ldots = E(X_q) = 0
+\]</span> Principle components are ordered according to their variances, with the first principle component having the largest. In addition, all subsequent principle components have to be <em>orthogonal</em> to the previous components.</p>
+</section>
+<section id="computation" class="level2">
+<h2 class="anchored" data-anchor-id="computation">Computation</h2>
+<p>There are multiple approaches to compute principle components, here, spectral decomposition of the covariance matrix <span class="math inline">\(\pmb{S} \in \mathbb{R}^{q\times q}\)</span> will be used. The spectral decomposition <span class="math display">\[
+\pmb{S} = \pmb{A}\pmb{D}\pmb{A}^T
+\]</span> yields the matrix <span class="math inline">\(\pmb{A} \in \mathbb{R}^{q\times q}\)</span>, in which the columns <span class="math inline">\(\pmb{a}_k\)</span> are the eigenvectors, and the matrix <span class="math inline">\(\pmb{D} \in \mathbb{R}^{q\times q}\)</span>. <span class="math inline">\(\pmb{D}\)</span> is a diagonal matrix whose elements <span class="math inline">\(\lambda_k\)</span> are the eigenvalues to <span class="math inline">\(\pmb{a}_k\)</span> and correspond to the variance of the associated eigenvector. Thus <span class="math display">\[
+\pmb{S}\pmb{a}_k = \lambda_k\cdot\pmb{a}_k
+\]</span> The algorithm to compute PCA with spectral decomposition is:</p>
+<ol type="1">
+<li>Calculate the eigenvalues <span class="math inline">\(\lambda_k\)</span> and eigenvectors <span class="math inline">\(\pmb{a}_k\)</span> from the sample covariance matrix <span class="math inline">\(\pmb{S}\)</span></li>
+<li>Sort the eigenvalues in descending order and order the corresponding eigenvectors the same way</li>
+<li>The k-th principle component is given by <span class="math display">\[
+\pmb{y}_k = \pmb{X}\pmb{a}_k
+\]</span></li>
+</ol>
+</section>
+<section id="properties" class="level2">
+<h2 class="anchored" data-anchor-id="properties">Properties</h2>
+<p>The sample variance of principle component <span class="math inline">\(k\)</span> equals <span class="math inline">\(\lambda_k\)</span>, the k-th largest eigenvalue of <span class="math inline">\(\pmb{S}\)</span>. The total sample variance of all <span class="math inline">\(q\)</span> variables equals <span class="math display">\[
+\mathrm{Tr}\left(\pmb{S}\right) = \mathrm{Tr}\left(\pmb{D}\right) = \Sigma_{j=1}^q \lambda_j
+\]</span> and the first <span class="math inline">\(k\)</span> principle components explain a fraction of <span class="math display">\[
+\frac{\Sigma_{j=1}^k\lambda_j}{\Sigma_{j=1}^q\lambda_j}
+\]</span> of the total variance. The sample correlations between different <span class="math inline">\(\pmb{y}_k\)</span> are zero, since the eigenvectors, by definition, are orthogonal. <span class="math display">\[
+\mathrm{Cor}(\pmb{y}_i, \pmb{y}_j) = 0, i \neq j
+\]</span></p>
+</section>
+</section>
 <section id="factor-analysis" class="level1">
 <h1>Factor Analysis</h1>
 <p>Factor analysis serves to find underlying latent factors to observed variables. This is useful for cases in which the variable of interest cannot be measured directly (e.g.&nbsp;intelligence, social class) but is represented by some proxy variable (e.g.&nbsp;test scores, occupation and education).</p>
@@ -297,6 +342,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
   clipboard.on('success', onCopySuccess);
   if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
     const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
       text: getTextToCopy,
       container: window.document.getElementById('quarto-embedded-source-code-modal')
@@ -407,6 +454,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
+      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {

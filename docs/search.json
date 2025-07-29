@@ -51,15 +51,36 @@
   {
     "objectID": "multivariate_statistics.html",
     "href": "multivariate_statistics.html",
-    "title": "multivariate statistics",
+    "title": "Multivariate Statistics",
     "section": "",
-    "text": "This page is based on the lecture Applied Multivariate Statistics (401-0102-00L) held by Fabio Sigrist at ETH Zurich."
+    "text": "This page is based on the lecture Applied Multivariate Statistics 401-0102-00L held by Fabio Sigrist at ETH Zurich."
   },
   {
     "objectID": "multivariate_statistics.html#factor-model",
     "href": "multivariate_statistics.html#factor-model",
-    "title": "multivariate statistics",
+    "title": "Multivariate Statistics",
     "section": "Factor Model",
     "text": "Factor Model\nThe factor model in matrix notation is as follows \\[\nX = \\Lambda f + u\n\\] in which\n\n\\(X \\in \\mathbb{R}^q\\) are the observed variables,\n\\(\\Lambda\\) is a \\(q\\times k\\) matrix containing the factor loadings,\n\\(f \\in \\mathbb{R}^k\\) are the latent/common factors,\n\\(u \\in \\mathbb{R}^q\\) are the specific factors.\n\n\\(X\\), \\(u\\), and \\(f\\) are random vectors, while \\(\\Lambda\\) is constant. It is important to note that \\(f\\) is not observed, so \\(\\Lambda\\) and \\(u\\) cannot be estimated with a least squares approach (in contrast to a regression model).\nA number of things are assumed\n\n\\(E(u) = 0\\)\n\\(\\mathrm{Cov}(u) = \\Psi\\), a diagonal matrix. The specific factors are uncorrelated.\n\\(\\mathrm{Cov}(f_l, u_j) = 0\\), the common and specific factors are uncorrelated.\n\\(E(X) = 0\\), the data is mean-centered.\n\\(E(f) = 0\\), \\(\\mathrm{Cov}(f) = I\\), latent factors are standardized with a mean of zero, and a variance of one. They are uncorrelated.\n\nThese assumptions imply that the common factors and the observed variables are uncorrelated. The correlation is established by the latent factors \\(\\Lambda\\).\n\\[\\begin{align*}\n\\Sigma &= \\mathrm{Cov}(\\Lambda f+u) \\\\\n&= \\mathrm{Cov}(\\Lambda f) + \\mathrm{Cov}(u) \\\\\n&= \\Lambda\\mathrm{Cov}(f)\\Lambda^T+\\Psi\\\\\n&= \\Lambda\\Lambda^T + \\Psi\\\\\n\\end{align*}\\]\nWriting as scalars, this equals \\[\n\\sigma^2_j = \\Sigma_{l=1}^k \\lambda^2_{jl} + \\psi_j = h_j^2 + \\psi_j\n\\]\nin which \\(h_j^2\\) is the communality, the variance resulting from the latent factors, and \\(\\psi_j\\) the specific variance, that is not shared among the observed variables. If the above expression holds, then the factor model holds for \\(X\\)."
+  },
+  {
+    "objectID": "multivariate_statistics.html#model-definition",
+    "href": "multivariate_statistics.html#model-definition",
+    "title": "Multivariate Statistics",
+    "section": "Model Definition",
+    "text": "Model Definition\nThe idea is to transform the data matrix \\(\\pmb{X} \\in \\mathbb{R}^{n\\times q}\\) with the loadings matrix \\(\\pmb{A} \\in \\mathbb{R}^{q\\times q}\\) such that the transformed values \\(\\pmb{Y} \\in \\mathbb{R}^{n\\times q}\\), called scores, have maximal variance along the axes. \\[\n\\pmb{Y} = \\pmb{X}\\pmb{A}\n\\] The k-th column in \\(\\pmb{Y}\\) and \\(\\pmb{A}\\) correspond to the scores and loadings of the k-th principle component, respectively. The loadings of each component \\(k\\) are normalized \\[\n\\Sigma_{j=1}^q a_{jk}^2 = 1\n\\] and the mean of each variable is zero. This can be achieved by subtracting the mean of the data. \\[\nE(X_1) = \\ldots = E(X_q) = 0\n\\] Principle components are ordered according to their variances, with the first principle component having the largest. In addition, all subsequent principle components have to be orthogonal to the previous components."
+  },
+  {
+    "objectID": "multivariate_statistics.html#computation",
+    "href": "multivariate_statistics.html#computation",
+    "title": "Multivariate Statistics",
+    "section": "Computation",
+    "text": "Computation\nThere are multiple approaches to compute principle components, here, spectral decomposition of the covariance matrix \\(\\pmb{S} \\in \\mathbb{R}^{q\\times q}\\) will be used. The spectral decomposition \\[\n\\pmb{S} = \\pmb{A}\\pmb{D}\\pmb{A}^T\n\\] yields the matrix \\(\\pmb{A} \\in \\mathbb{R}^{q\\times q}\\), in which the columns \\(\\pmb{a}_k\\) are the eigenvectors, and the matrix \\(\\pmb{D} \\in \\mathbb{R}^{q\\times q}\\). \\(\\pmb{D}\\) is a diagonal matrix whose elements \\(\\lambda_k\\) are the eigenvalues to \\(\\pmb{a}_k\\) and correspond to the variance of the associated eigenvector. Thus \\[\n\\pmb{S}\\pmb{a}_k = \\lambda_k\\cdot\\pmb{a}_k\n\\] The algorithm to compute PCA with spectral decomposition is:\n\nCalculate the eigenvalues \\(\\lambda_k\\) and eigenvectors \\(\\pmb{a}_k\\) from the sample covariance matrix \\(\\pmb{S}\\)\nSort the eigenvalues in descending order and order the corresponding eigenvectors the same way\nThe k-th principle component is given by \\[\n\\pmb{y}_k = \\pmb{X}\\pmb{a}_k\n\\]"
+  },
+  {
+    "objectID": "multivariate_statistics.html#properties",
+    "href": "multivariate_statistics.html#properties",
+    "title": "Multivariate Statistics",
+    "section": "Properties",
+    "text": "Properties\nThe sample variance of principle component \\(k\\) equals \\(\\lambda_k\\), the k-th largest eigenvalue of \\(\\pmb{S}\\). The total sample variance of all \\(q\\) variables equals \\[\n\\mathrm{Tr}\\left(\\pmb{S}\\right) = \\mathrm{Tr}\\left(\\pmb{D}\\right) = \\Sigma_{j=1}^q \\lambda_j\n\\] and the first \\(k\\) principle components explain a fraction of \\[\n\\frac{\\Sigma_{j=1}^k\\lambda_j}{\\Sigma_{j=1}^q\\lambda_j}\n\\] of the total variance. The sample correlations between different \\(\\pmb{y}_k\\) are zero, since the eigenvectors, by definition, are orthogonal. \\[\n\\mathrm{Cor}(\\pmb{y}_i, \\pmb{y}_j) = 0, i \\neq j\n\\]"
   }
 ]
