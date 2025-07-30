@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -66,6 +100,8 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -150,6 +186,16 @@ window.Quarto = {
   <li><a href="#model-definition" id="toc-model-definition" class="nav-link" data-scroll-target="#model-definition">Model Definition</a></li>
   <li><a href="#computation" id="toc-computation" class="nav-link" data-scroll-target="#computation">Computation</a></li>
   <li><a href="#properties" id="toc-properties" class="nav-link" data-scroll-target="#properties">Properties</a></li>
+  <li><a href="#dimension-reduction" id="toc-dimension-reduction" class="nav-link" data-scroll-target="#dimension-reduction">Dimension Reduction</a></li>
+  <li><a href="#practical-considerations" id="toc-practical-considerations" class="nav-link" data-scroll-target="#practical-considerations">Practical Considerations</a>
+  <ul class="collapse">
+  <li><a href="#interpretation-of-loadings" id="toc-interpretation-of-loadings" class="nav-link" data-scroll-target="#interpretation-of-loadings">Interpretation of Loadings</a></li>
+  <li><a href="#scaling" id="toc-scaling" class="nav-link" data-scroll-target="#scaling">Scaling</a></li>
+  <li><a href="#choosing-the-number-of-principle-components" id="toc-choosing-the-number-of-principle-components" class="nav-link" data-scroll-target="#choosing-the-number-of-principle-components">Choosing the Number of Principle Components</a></li>
+  </ul></li>
+  <li><a href="#predition-of-scores-for-new-observations" id="toc-predition-of-scores-for-new-observations" class="nav-link" data-scroll-target="#predition-of-scores-for-new-observations">Predition of Scores for New Observations</a></li>
+  <li><a href="#case-study" id="toc-case-study" class="nav-link" data-scroll-target="#case-study">Case Study</a></li>
+  <li><a href="#pca-by-hand" id="toc-pca-by-hand" class="nav-link" data-scroll-target="#pca-by-hand">PCA by Hand</a></li>
   </ul></li>
   <li><a href="#factor-analysis" id="toc-factor-analysis" class="nav-link" data-scroll-target="#factor-analysis">Factor Analysis</a>
   <ul class="collapse">
@@ -186,7 +232,7 @@ window.Quarto = {
 <p>Principal component analysis (PCA) aims at reducing a large number of variables to a smaller number while preserving as much variation as possible. This can be useful for visualizing data, but also to reduce the computational burden for other statistical techniques as well as simplifying regression problems by reducing collinearity.</p>
 <section id="model-definition" class="level2">
 <h2 class="anchored" data-anchor-id="model-definition">Model Definition</h2>
-<p>The idea is to transform the data matrix <span class="math inline">\(\pmb{X} \in \mathbb{R}^{n\times q}\)</span> with the loadings matrix <span class="math inline">\(\pmb{A} \in \mathbb{R}^{q\times q}\)</span> such that the transformed values <span class="math inline">\(\pmb{Y} \in \mathbb{R}^{n\times q}\)</span>, called scores, have maximal variance along the axes. <span class="math display">\[
+<p>The idea is to transform the data matrix <span class="math inline">\(\pmb{X} \in \mathbb{R}^{n\times q}\)</span> with the orthogonal loadings matrix <span class="math inline">\(\pmb{A} \in \mathbb{R}^{q\times q}\)</span> such that the transformed values <span class="math inline">\(\pmb{Y} \in \mathbb{R}^{n\times q}\)</span>, called scores, have maximal variance along the axes. <span class="math display">\[
 \pmb{Y} = \pmb{X}\pmb{A}
 \]</span> The k-th column in <span class="math inline">\(\pmb{Y}\)</span> and <span class="math inline">\(\pmb{A}\)</span> correspond to the <em>scores</em> and <em>loadings</em> of the k-th principle component, respectively. The loadings of each component <span class="math inline">\(k\)</span> are normalized <span class="math display">\[
 \Sigma_{j=1}^q a_{jk}^2 = 1
@@ -217,7 +263,1491 @@ E(X_1) = \ldots = E(X_q) = 0
 \frac{\Sigma_{j=1}^k\lambda_j}{\Sigma_{j=1}^q\lambda_j}
 \]</span> of the total variance. The sample correlations between different <span class="math inline">\(\pmb{y}_k\)</span> are zero, since the eigenvectors, by definition, are orthogonal. <span class="math display">\[
 \mathrm{Cor}(\pmb{y}_i, \pmb{y}_j) = 0, i \neq j
+\]</span> The signs of the loadings are arbitrary, since <span class="math display">\[
+\pmb{S} = \pmb{A}\pmb{D}\pmb{A}^T = (-\pmb{A})\pmb{D}(-\pmb{A})^T
 \]</span></p>
+</section>
+<section id="dimension-reduction" class="level2">
+<h2 class="anchored" data-anchor-id="dimension-reduction">Dimension Reduction</h2>
+<p>Dimension reduction can be obtained by discarding principle components which account for a small fraction of the total variance. From <span class="math inline">\(\pmb{Y} = \pmb{X}\pmb{A}\)</span> it follows that <span class="math inline">\(\pmb{X} = \pmb{Y}\pmb{A}^T\)</span>. <span class="math inline">\(\pmb{A}\)</span> and <span class="math inline">\(\pmb{Y}\)</span> can then be split into sub-matrices such that <span class="math display">\[
+\pmb{X} = \pmb{Y}\pmb{A}^T = \pmb{Y}^{(1)}\pmb{A}_1^T + \pmb{Y}^{(2)}\pmb{A}_2^T \approx \pmb{Y}^{(1)}\pmb{A}_1^T
+\]</span> if <span class="math inline">\(\pmb{Y}^{(2)}\)</span> is small and its variance is close to zero. The dimensions of the loadings sub-matrices are <span class="math inline">\(\dim(\pmb{A_1}) = q \times k\)</span> and <span class="math inline">\(\dim(\pmb{A_2}) = q \times (q-k)\)</span>, with <span class="math inline">\(k\)</span> the number of principle components kept. The dimensions of the score matrices are <span class="math inline">\(\dim(\pmb{Y}^{(1)}) = n \times k\)</span> and <span class="math inline">\(\dim(\pmb{Y}^{(2)}) = n \times (q-k)\)</span></p>
+</section>
+<section id="practical-considerations" class="level2">
+<h2 class="anchored" data-anchor-id="practical-considerations">Practical Considerations</h2>
+<section id="interpretation-of-loadings" class="level3">
+<h3 class="anchored" data-anchor-id="interpretation-of-loadings">Interpretation of Loadings</h3>
+<p>When all variables are positively correlated, the first principle component is often a kind of average of the variables, while other principle components inform on the remaining patterns or shapes. Interpretation of principle components may be difficult, since all variables may have significant loadings within one principle component and can thus not be attributed to some particular set of variables.</p>
+</section>
+<section id="scaling" class="level3">
+<h3 class="anchored" data-anchor-id="scaling">Scaling</h3>
+<p>PCA is <em><strong>not</strong> scale-invariant</em>, as the scale (unit) in which the variable is measured changes the range of the values and with it its variance (e.g.&nbsp;centimeters vs.&nbsp;meters). If variables have large differences in their variances, the variable with the largest variances tends to dominate the first principle components. To overcome this issue, variables <span class="math inline">\(X_j\)</span> may be scaled by dividing by their standard deviation <span class="math inline">\(\sigma_j\)</span>, rendering the variances identical. <span class="math display">\[
+X_j' = \frac{X_j}{\sigma_j}
+\]</span> Scaling the data prior to PCA is often preferred, but involves the arbitrary choice to make variables equally important. Alternatively, PCA can be done using the correlation matrix <span class="math inline">\(\pmb{C}\)</span> instead of the covariance matrix, however, this is equal to scaling the data before calculating the covariance matrix.</p>
+</section>
+<section id="choosing-the-number-of-principle-components" class="level3">
+<h3 class="anchored" data-anchor-id="choosing-the-number-of-principle-components">Choosing the Number of Principle Components</h3>
+<p>There are no universal rules to choose the number of principle components for dimension reduction, however, a number rules of thumb exist.</p>
+<ol type="1">
+<li>The cumulative proportion of explained variance by <span class="math inline">\(k\)</span> principle components should be at least 0.8 <span class="math display">\[
+\frac{\Sigma_{j=1}^k\lambda_j}{\Sigma_{j=1}^q\lambda_j} \geq 0.8
+\]</span></li>
+<li>Only those principle components with above-average variance are kept. If the correlation matrix or scaled data was used to perform PCA, this corresponds to all principle components whose eigenvalues are larger than 1. <span class="math display">\[
+\lambda_k \geq \frac{1}{q}\Sigma_{j=1}^q\lambda_j
+\]</span></li>
+<li>Look at the scree plot of the variances <span class="math inline">\(\lambda_j\)</span> versus the component index <span class="math inline">\(j\)</span> and keep only those principle components that occur before the elbow.</li>
+</ol>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="multivariate_statistics_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="480"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The effect of removing some principle components during dimension reduction may be different for different variables. To assess this effect, the squared correlations <span class="math inline">\(r_{ij}^2\)</span> between variable <span class="math inline">\(X_i\)</span> and principle component <span class="math inline">\(Y_j\)</span> may be consulted, as <span class="math inline">\(r_{ij}^2\)</span> corresponds to the proportion of variance of <span class="math inline">\(X_i\)</span> that is explained by <span class="math inline">\(Y_j\)</span>.</p>
+</section>
+</section>
+<section id="predition-of-scores-for-new-observations" class="level2">
+<h2 class="anchored" data-anchor-id="predition-of-scores-for-new-observations">Predition of Scores for New Observations</h2>
+<p>The score of a new observation <span class="math inline">\(x = (x_1,\ldots,x_q)^t\)</span> can be calculated with the previously obtained loadings matrix <span class="math inline">\(\pmb{A}\)</span>. First, the new observation must be mean-subtracted with the sample-mean vector <span class="math inline">\(\hat{\mu}\)</span>. <span class="math display">\[
+\tilde{x} = x-\hat{\mu} = (x_1 - \hat{\mu}_1, \ldots, x_q - \hat{\mu}_q)^T
+\]</span> In case of scaling, the vector must be divided by the standard deviation vector <span class="math inline">\(\hat{\sigma}\)</span>. <span class="math display">\[
+\tilde{x} = \frac{x-\hat{\mu}}{\hat{\sigma}}
+\]</span> After pre-processing of the data, the scores of the new observation can be calculated by <span class="math display">\[
+y = \pmb{A}^T\tilde{x}
+\]</span></p>
+</section>
+<section id="case-study" class="level2">
+<h2 class="anchored" data-anchor-id="case-study">Case Study</h2>
+<p>The <code>heptathlon</code> dataset contains results from the olympic heptathlon competition in Seoul, 1988. It is a data frame with 25 observations on 8 variables: hurdles, highjump, shot, run200m, longjump, javelin, run800m, score. The variables hurdles, run200m, and run800m need to be transformed, such that a high value equals a good performance. This is done with the transformation <code>max(variable)-variable</code>.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; ">
+<table class="table caption-top table-sm table-striped small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;"></th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">hurdles</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">highjump</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">shot</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">run200m</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">longjump</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">javelin</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">run800m</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">score</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Joyner-Kersee (USA)</td>
+<td style="text-align: right;">2.16</td>
+<td style="text-align: right;">1.86</td>
+<td style="text-align: right;">15.80</td>
+<td style="text-align: right;">4.05</td>
+<td style="text-align: right;">7.27</td>
+<td style="text-align: right;">45.66</td>
+<td style="text-align: right;">18.16</td>
+<td style="text-align: right;">7291</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">John (GDR)</td>
+<td style="text-align: right;">2.00</td>
+<td style="text-align: right;">1.80</td>
+<td style="text-align: right;">16.23</td>
+<td style="text-align: right;">2.96</td>
+<td style="text-align: right;">6.71</td>
+<td style="text-align: right;">42.56</td>
+<td style="text-align: right;">20.55</td>
+<td style="text-align: right;">6897</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Behmer (GDR)</td>
+<td style="text-align: right;">1.65</td>
+<td style="text-align: right;">1.83</td>
+<td style="text-align: right;">14.20</td>
+<td style="text-align: right;">3.51</td>
+<td style="text-align: right;">6.68</td>
+<td style="text-align: right;">44.54</td>
+<td style="text-align: right;">22.47</td>
+<td style="text-align: right;">6858</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sablovskaite (URS)</td>
+<td style="text-align: right;">1.24</td>
+<td style="text-align: right;">1.80</td>
+<td style="text-align: right;">15.23</td>
+<td style="text-align: right;">2.69</td>
+<td style="text-align: right;">6.25</td>
+<td style="text-align: right;">42.78</td>
+<td style="text-align: right;">14.43</td>
+<td style="text-align: right;">6540</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Choubenkova (URS)</td>
+<td style="text-align: right;">1.34</td>
+<td style="text-align: right;">1.74</td>
+<td style="text-align: right;">14.76</td>
+<td style="text-align: right;">2.68</td>
+<td style="text-align: right;">6.32</td>
+<td style="text-align: right;">47.46</td>
+<td style="text-align: right;">18.77</td>
+<td style="text-align: right;">6540</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Schulz (GDR)</td>
+<td style="text-align: right;">1.10</td>
+<td style="text-align: right;">1.83</td>
+<td style="text-align: right;">13.50</td>
+<td style="text-align: right;">1.96</td>
+<td style="text-align: right;">6.33</td>
+<td style="text-align: right;">42.82</td>
+<td style="text-align: right;">20.88</td>
+<td style="text-align: right;">6411</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Fleming (AUS)</td>
+<td style="text-align: right;">1.47</td>
+<td style="text-align: right;">1.80</td>
+<td style="text-align: right;">12.88</td>
+<td style="text-align: right;">3.02</td>
+<td style="text-align: right;">6.37</td>
+<td style="text-align: right;">40.28</td>
+<td style="text-align: right;">14.13</td>
+<td style="text-align: right;">6351</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Greiner (USA)</td>
+<td style="text-align: right;">1.30</td>
+<td style="text-align: right;">1.80</td>
+<td style="text-align: right;">14.13</td>
+<td style="text-align: right;">2.13</td>
+<td style="text-align: right;">6.47</td>
+<td style="text-align: right;">38.00</td>
+<td style="text-align: right;">13.02</td>
+<td style="text-align: right;">6297</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Lajbnerova (CZE)</td>
+<td style="text-align: right;">1.22</td>
+<td style="text-align: right;">1.83</td>
+<td style="text-align: right;">14.28</td>
+<td style="text-align: right;">1.75</td>
+<td style="text-align: right;">6.11</td>
+<td style="text-align: right;">42.20</td>
+<td style="text-align: right;">10.62</td>
+<td style="text-align: right;">6252</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Bouraga (URS)</td>
+<td style="text-align: right;">1.60</td>
+<td style="text-align: right;">1.77</td>
+<td style="text-align: right;">12.62</td>
+<td style="text-align: right;">3.02</td>
+<td style="text-align: right;">6.28</td>
+<td style="text-align: right;">39.06</td>
+<td style="text-align: right;">11.93</td>
+<td style="text-align: right;">6252</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Wijnsma (HOL)</td>
+<td style="text-align: right;">1.10</td>
+<td style="text-align: right;">1.86</td>
+<td style="text-align: right;">13.01</td>
+<td style="text-align: right;">1.58</td>
+<td style="text-align: right;">6.34</td>
+<td style="text-align: right;">37.86</td>
+<td style="text-align: right;">15.18</td>
+<td style="text-align: right;">6205</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Dimitrova (BUL)</td>
+<td style="text-align: right;">1.61</td>
+<td style="text-align: right;">1.80</td>
+<td style="text-align: right;">12.88</td>
+<td style="text-align: right;">3.02</td>
+<td style="text-align: right;">6.37</td>
+<td style="text-align: right;">40.28</td>
+<td style="text-align: right;">14.13</td>
+<td style="text-align: right;">6171</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Scheider (SWI)</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">1.86</td>
+<td style="text-align: right;">11.58</td>
+<td style="text-align: right;">1.74</td>
+<td style="text-align: right;">6.05</td>
+<td style="text-align: right;">47.50</td>
+<td style="text-align: right;">11.74</td>
+<td style="text-align: right;">6137</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Braun (FRG)</td>
+<td style="text-align: right;">1.14</td>
+<td style="text-align: right;">1.83</td>
+<td style="text-align: right;">13.16</td>
+<td style="text-align: right;">1.83</td>
+<td style="text-align: right;">6.12</td>
+<td style="text-align: right;">44.58</td>
+<td style="text-align: right;">3.85</td>
+<td style="text-align: right;">6109</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ruotsalainen (FIN)</td>
+<td style="text-align: right;">1.06</td>
+<td style="text-align: right;">1.80</td>
+<td style="text-align: right;">12.32</td>
+<td style="text-align: right;">2.00</td>
+<td style="text-align: right;">6.08</td>
+<td style="text-align: right;">45.44</td>
+<td style="text-align: right;">9.61</td>
+<td style="text-align: right;">6101</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Yuping (CHN)</td>
+<td style="text-align: right;">0.92</td>
+<td style="text-align: right;">1.86</td>
+<td style="text-align: right;">14.21</td>
+<td style="text-align: right;">1.61</td>
+<td style="text-align: right;">6.40</td>
+<td style="text-align: right;">38.60</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">6087</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Hagger (GB)</td>
+<td style="text-align: right;">1.38</td>
+<td style="text-align: right;">1.80</td>
+<td style="text-align: right;">12.75</td>
+<td style="text-align: right;">1.14</td>
+<td style="text-align: right;">6.34</td>
+<td style="text-align: right;">35.76</td>
+<td style="text-align: right;">8.19</td>
+<td style="text-align: right;">5975</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Brown (USA)</td>
+<td style="text-align: right;">0.78</td>
+<td style="text-align: right;">1.83</td>
+<td style="text-align: right;">12.69</td>
+<td style="text-align: right;">1.78</td>
+<td style="text-align: right;">6.13</td>
+<td style="text-align: right;">44.34</td>
+<td style="text-align: right;">0.24</td>
+<td style="text-align: right;">5972</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Mulliner (GB)</td>
+<td style="text-align: right;">0.46</td>
+<td style="text-align: right;">1.71</td>
+<td style="text-align: right;">12.68</td>
+<td style="text-align: right;">1.69</td>
+<td style="text-align: right;">6.10</td>
+<td style="text-align: right;">37.76</td>
+<td style="text-align: right;">8.65</td>
+<td style="text-align: right;">5746</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Hautenauve (BEL)</td>
+<td style="text-align: right;">0.81</td>
+<td style="text-align: right;">1.77</td>
+<td style="text-align: right;">11.81</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">5.99</td>
+<td style="text-align: right;">35.68</td>
+<td style="text-align: right;">12.77</td>
+<td style="text-align: right;">5734</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Kytola (FIN)</td>
+<td style="text-align: right;">0.54</td>
+<td style="text-align: right;">1.77</td>
+<td style="text-align: right;">11.66</td>
+<td style="text-align: right;">0.92</td>
+<td style="text-align: right;">5.75</td>
+<td style="text-align: right;">39.48</td>
+<td style="text-align: right;">13.32</td>
+<td style="text-align: right;">5686</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Geremias (BRA)</td>
+<td style="text-align: right;">0.62</td>
+<td style="text-align: right;">1.71</td>
+<td style="text-align: right;">12.95</td>
+<td style="text-align: right;">1.11</td>
+<td style="text-align: right;">5.50</td>
+<td style="text-align: right;">39.64</td>
+<td style="text-align: right;">2.65</td>
+<td style="text-align: right;">5508</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Hui-Ing (TAI)</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">1.68</td>
+<td style="text-align: right;">10.00</td>
+<td style="text-align: right;">1.38</td>
+<td style="text-align: right;">5.47</td>
+<td style="text-align: right;">39.14</td>
+<td style="text-align: right;">9.37</td>
+<td style="text-align: right;">5290</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Jeong-Mi (KOR)</td>
+<td style="text-align: right;">0.32</td>
+<td style="text-align: right;">1.71</td>
+<td style="text-align: right;">10.83</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">5.50</td>
+<td style="text-align: right;">39.26</td>
+<td style="text-align: right;">7.50</td>
+<td style="text-align: right;">5289</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+</div>
+</div>
+<p>The correlation matrix indicates that some of the disciplines are well positively correlated, while others show very little correlation.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="multivariate_statistics_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="480"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The variances of the variables</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code> hurdles highjump     shot  run200m longjump  javelin  run800m 
+    0.26     0.00     2.24     0.88     0.16    12.03    37.79 </code></pre>
+</div>
+</div>
+<p>are on very different scales, such that it is preferable to perform the analysis on the correlation matrix instead.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(heptathlon_pca <span class="ot">&lt;-</span> <span class="fu">princomp</span>(c_heptathlon[,<span class="sc">-</span><span class="dv">8</span>], <span class="at">cor =</span> <span class="cn">TRUE</span>), <span class="at">loadings =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Importance of components:
+                          Comp.1    Comp.2    Comp.3     Comp.4     Comp.5
+Standard deviation     2.0793370 0.9481532 0.9109016 0.68319667 0.54618878
+Proportion of Variance 0.6176632 0.1284278 0.1185345 0.06667967 0.04261745
+Cumulative Proportion  0.6176632 0.7460909 0.8646255 0.93130515 0.97392260
+                           Comp.6      Comp.7
+Standard deviation     0.33745486 0.262042024
+Proportion of Variance 0.01626797 0.009809432
+Cumulative Proportion  0.99019057 1.000000000
+
+Loadings:
+         Comp.1 Comp.2 Comp.3 Comp.4 Comp.5 Comp.6 Comp.7
+hurdles   0.450         0.174         0.199  0.847       
+highjump  0.315 -0.651  0.209 -0.557               -0.332
+shot      0.402         0.153  0.548 -0.672        -0.229
+run200m   0.427  0.185 -0.130  0.231  0.618 -0.333 -0.470
+longjump  0.451         0.270         0.122 -0.383  0.749
+javelin   0.242 -0.326 -0.881                       0.211
+run800m   0.303  0.657 -0.193 -0.574 -0.319              </code></pre>
+</div>
+</div>
+<p>The “importance of the components” section informs on the standard deviation, the proportion of variance, and the cumulative proportion of the variance of each principle component. The <em>cumulative proportion of the variance</em> can be used to choose the number of dimensions for dimension reduction by choosing the first component <span class="math inline">\(k\)</span> as cutoff for which this value is larger than 0.8.</p>
+<p>The loadings indiciate the weight that is given to each variable for a given principle component. Principle component 1 has exclusively positive loadings and can be taken as an average of all values, while the remaining components indicate differences to that average. Thus, an athlete with a high score in principle component 2 does better than the average in run200m and run800m, but worse in highjump and javelin.</p>
+<p>This is exemplified by the case of athlete Scheider (SWI), who has a score of principle component 1 close to zero and is therefore close to the average, but has a low score for principle component 2. Due to the double-negative of negative score and negative loadings, she does very well in highjump and javelin.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="multivariate_statistics_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="480"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<table class="table caption-top table-sm table-striped small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th"></th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">hurdles</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">highjump</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">shot</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">run200m</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">longjump</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">javelin</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">run800m</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">score</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">average</td>
+<td style="text-align: right;">1.12</td>
+<td style="text-align: right;">1.79</td>
+<td style="text-align: right;">13.17</td>
+<td style="text-align: right;">2.02</td>
+<td style="text-align: right;">6.21</td>
+<td style="text-align: right;">41.28</td>
+<td style="text-align: right;">11.76</td>
+<td style="text-align: right;">6154.12</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Scheider (SWI)</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">1.86</td>
+<td style="text-align: right;">11.58</td>
+<td style="text-align: right;">1.74</td>
+<td style="text-align: right;">6.05</td>
+<td style="text-align: right;">47.50</td>
+<td style="text-align: right;">11.74</td>
+<td style="text-align: right;">6137.00</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<p>The scores for an additional athlete can be predicted using the <code>predict()</code> function as follows</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>athlete_new_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">hurdles =</span> <span class="dv">3</span>,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">highjump =</span> <span class="fl">1.5</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">shot =</span> <span class="fl">9.5</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">run200m =</span> <span class="fl">1.8</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">longjump =</span> <span class="fl">6.8</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">javelin =</span> <span class="dv">37</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">run800m =</span> <span class="dv">25</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(heptathlon_pca, athlete_new_data)[,<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    Comp.1     Comp.2 
+-0.1903395  5.7786855 </code></pre>
+</div>
+</div>
+</section>
+<section id="pca-by-hand" class="level2">
+<h2 class="anchored" data-anchor-id="pca-by-hand">PCA by Hand</h2>
+<p>To illustrate how PCA works, PCA is done on the <code>iris</code> data set without using dedicated PCA functions. The <code>iris</code> data set contains four continuous and one categorical variable, only the continuous variables are considered. First, the variables need to be mean-subtracted</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>iris_centered <span class="ot">&lt;-</span> <span class="fu">apply</span>(iris[,<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>], <span class="dv">2</span>, <span class="cf">function</span>(x) x<span class="sc">-</span><span class="fu">mean</span>(x))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Afterwards, the spectral decomposition of the covariance matrix is calculated using the <code>eigen()</code> function.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>iris_eigen <span class="ot">&lt;-</span> iris_centered <span class="sc">|&gt;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cov</span>() <span class="sc">|&gt;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">eigen</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The eigenvalues correspond to the variance of the corresponding eigenvector. The eigenvector matrix is identical to the loadings calculated by <code>printcomp()</code>, except for the signs.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table caption-top table-sm table-striped small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th"></th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">PC1</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">PC2</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">PC3</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">PC4</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">eigenvalues</td>
+<td style="text-align: right;">4.23</td>
+<td style="text-align: right;">0.24</td>
+<td style="text-align: right;">0.08</td>
+<td style="text-align: right;">0.02</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+<div class="cell-output-display">
+<table class="table caption-top table-sm table-striped small" data-quarto-postprocess="true">
+<caption>The eigenvectors correspond to the loadings of the principal components</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th"></th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">PC1</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">PC2</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">PC3</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">PC4</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Sepal.Length</td>
+<td style="text-align: right;">0.361</td>
+<td style="text-align: right;">-0.657</td>
+<td style="text-align: right;">0.582</td>
+<td style="text-align: right;">0.315</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sepal.Width</td>
+<td style="text-align: right;">-0.085</td>
+<td style="text-align: right;">-0.730</td>
+<td style="text-align: right;">-0.598</td>
+<td style="text-align: right;">-0.320</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Petal.Length</td>
+<td style="text-align: right;">0.857</td>
+<td style="text-align: right;">0.173</td>
+<td style="text-align: right;">-0.076</td>
+<td style="text-align: right;">-0.480</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Petal.Width</td>
+<td style="text-align: right;">0.358</td>
+<td style="text-align: right;">0.075</td>
+<td style="text-align: right;">-0.546</td>
+<td style="text-align: right;">0.754</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<p>The scores are calculated from the data matrix and the eigenvector matrix</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>iris_centered<span class="sc">%*%</span>iris_eigen<span class="sc">$</span>vectors</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; ">
+<table class="table caption-top table-sm table-striped small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">PC1</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">PC2</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">PC3</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">PC4</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">-2.68</td>
+<td style="text-align: right;">-0.32</td>
+<td style="text-align: right;">0.03</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">-2.71</td>
+<td style="text-align: right;">0.18</td>
+<td style="text-align: right;">0.21</td>
+<td style="text-align: right;">0.10</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">-2.89</td>
+<td style="text-align: right;">0.14</td>
+<td style="text-align: right;">-0.02</td>
+<td style="text-align: right;">0.02</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">-2.75</td>
+<td style="text-align: right;">0.32</td>
+<td style="text-align: right;">-0.03</td>
+<td style="text-align: right;">-0.08</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">-2.73</td>
+<td style="text-align: right;">-0.33</td>
+<td style="text-align: right;">-0.09</td>
+<td style="text-align: right;">-0.06</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">-2.28</td>
+<td style="text-align: right;">-0.74</td>
+<td style="text-align: right;">-0.17</td>
+<td style="text-align: right;">-0.02</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">-2.82</td>
+<td style="text-align: right;">0.09</td>
+<td style="text-align: right;">-0.26</td>
+<td style="text-align: right;">-0.05</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">-2.63</td>
+<td style="text-align: right;">-0.16</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">-0.05</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">-2.89</td>
+<td style="text-align: right;">0.58</td>
+<td style="text-align: right;">-0.02</td>
+<td style="text-align: right;">-0.03</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">-2.67</td>
+<td style="text-align: right;">0.11</td>
+<td style="text-align: right;">0.20</td>
+<td style="text-align: right;">-0.06</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">-2.51</td>
+<td style="text-align: right;">-0.65</td>
+<td style="text-align: right;">0.08</td>
+<td style="text-align: right;">-0.02</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">-2.61</td>
+<td style="text-align: right;">-0.01</td>
+<td style="text-align: right;">-0.10</td>
+<td style="text-align: right;">-0.16</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">-2.79</td>
+<td style="text-align: right;">0.24</td>
+<td style="text-align: right;">0.21</td>
+<td style="text-align: right;">-0.01</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">-3.22</td>
+<td style="text-align: right;">0.51</td>
+<td style="text-align: right;">-0.06</td>
+<td style="text-align: right;">-0.02</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">-2.64</td>
+<td style="text-align: right;">-1.18</td>
+<td style="text-align: right;">0.15</td>
+<td style="text-align: right;">0.16</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">-2.39</td>
+<td style="text-align: right;">-1.34</td>
+<td style="text-align: right;">-0.28</td>
+<td style="text-align: right;">0.01</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">-2.62</td>
+<td style="text-align: right;">-0.81</td>
+<td style="text-align: right;">-0.14</td>
+<td style="text-align: right;">0.17</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">-2.65</td>
+<td style="text-align: right;">-0.31</td>
+<td style="text-align: right;">-0.03</td>
+<td style="text-align: right;">0.08</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">-2.20</td>
+<td style="text-align: right;">-0.87</td>
+<td style="text-align: right;">0.12</td>
+<td style="text-align: right;">0.03</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">-2.59</td>
+<td style="text-align: right;">-0.51</td>
+<td style="text-align: right;">-0.21</td>
+<td style="text-align: right;">-0.07</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">-2.31</td>
+<td style="text-align: right;">-0.39</td>
+<td style="text-align: right;">0.24</td>
+<td style="text-align: right;">-0.02</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">-2.54</td>
+<td style="text-align: right;">-0.43</td>
+<td style="text-align: right;">-0.21</td>
+<td style="text-align: right;">0.04</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">-3.22</td>
+<td style="text-align: right;">-0.13</td>
+<td style="text-align: right;">-0.29</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">-2.30</td>
+<td style="text-align: right;">-0.10</td>
+<td style="text-align: right;">-0.04</td>
+<td style="text-align: right;">0.15</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">-2.36</td>
+<td style="text-align: right;">0.04</td>
+<td style="text-align: right;">-0.13</td>
+<td style="text-align: right;">-0.30</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">-2.51</td>
+<td style="text-align: right;">0.15</td>
+<td style="text-align: right;">0.25</td>
+<td style="text-align: right;">0.03</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">-2.47</td>
+<td style="text-align: right;">-0.13</td>
+<td style="text-align: right;">-0.09</td>
+<td style="text-align: right;">0.06</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">-2.56</td>
+<td style="text-align: right;">-0.37</td>
+<td style="text-align: right;">0.08</td>
+<td style="text-align: right;">-0.01</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">-2.64</td>
+<td style="text-align: right;">-0.31</td>
+<td style="text-align: right;">0.15</td>
+<td style="text-align: right;">0.07</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">-2.63</td>
+<td style="text-align: right;">0.20</td>
+<td style="text-align: right;">-0.04</td>
+<td style="text-align: right;">-0.12</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">-2.59</td>
+<td style="text-align: right;">0.20</td>
+<td style="text-align: right;">0.08</td>
+<td style="text-align: right;">-0.06</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">-2.41</td>
+<td style="text-align: right;">-0.41</td>
+<td style="text-align: right;">0.15</td>
+<td style="text-align: right;">0.23</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">-2.65</td>
+<td style="text-align: right;">-0.81</td>
+<td style="text-align: right;">-0.23</td>
+<td style="text-align: right;">-0.28</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">-2.60</td>
+<td style="text-align: right;">-1.09</td>
+<td style="text-align: right;">-0.16</td>
+<td style="text-align: right;">-0.10</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">-2.64</td>
+<td style="text-align: right;">0.12</td>
+<td style="text-align: right;">0.14</td>
+<td style="text-align: right;">0.02</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">-2.87</td>
+<td style="text-align: right;">-0.07</td>
+<td style="text-align: right;">0.16</td>
+<td style="text-align: right;">0.16</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">-2.63</td>
+<td style="text-align: right;">-0.60</td>
+<td style="text-align: right;">0.27</td>
+<td style="text-align: right;">0.18</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">-2.80</td>
+<td style="text-align: right;">-0.27</td>
+<td style="text-align: right;">-0.09</td>
+<td style="text-align: right;">-0.17</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">-2.98</td>
+<td style="text-align: right;">0.49</td>
+<td style="text-align: right;">-0.07</td>
+<td style="text-align: right;">-0.01</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">-2.59</td>
+<td style="text-align: right;">-0.23</td>
+<td style="text-align: right;">0.08</td>
+<td style="text-align: right;">-0.01</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">-2.77</td>
+<td style="text-align: right;">-0.26</td>
+<td style="text-align: right;">-0.08</td>
+<td style="text-align: right;">0.09</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">-2.85</td>
+<td style="text-align: right;">0.94</td>
+<td style="text-align: right;">0.35</td>
+<td style="text-align: right;">0.32</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">-3.00</td>
+<td style="text-align: right;">0.34</td>
+<td style="text-align: right;">-0.19</td>
+<td style="text-align: right;">-0.07</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">-2.41</td>
+<td style="text-align: right;">-0.19</td>
+<td style="text-align: right;">-0.26</td>
+<td style="text-align: right;">0.18</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">-2.21</td>
+<td style="text-align: right;">-0.44</td>
+<td style="text-align: right;">-0.30</td>
+<td style="text-align: right;">-0.18</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">-2.71</td>
+<td style="text-align: right;">0.25</td>
+<td style="text-align: right;">0.10</td>
+<td style="text-align: right;">0.14</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">-2.54</td>
+<td style="text-align: right;">-0.50</td>
+<td style="text-align: right;">-0.17</td>
+<td style="text-align: right;">-0.19</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">-2.84</td>
+<td style="text-align: right;">0.23</td>
+<td style="text-align: right;">-0.08</td>
+<td style="text-align: right;">-0.06</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">-2.54</td>
+<td style="text-align: right;">-0.58</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">-0.05</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">-2.70</td>
+<td style="text-align: right;">-0.11</td>
+<td style="text-align: right;">0.09</td>
+<td style="text-align: right;">0.03</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1.28</td>
+<td style="text-align: right;">-0.69</td>
+<td style="text-align: right;">0.41</td>
+<td style="text-align: right;">0.02</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.93</td>
+<td style="text-align: right;">-0.32</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1.46</td>
+<td style="text-align: right;">-0.50</td>
+<td style="text-align: right;">0.34</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.18</td>
+<td style="text-align: right;">0.83</td>
+<td style="text-align: right;">0.18</td>
+<td style="text-align: right;">0.09</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1.09</td>
+<td style="text-align: right;">-0.07</td>
+<td style="text-align: right;">0.31</td>
+<td style="text-align: right;">0.11</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.64</td>
+<td style="text-align: right;">0.42</td>
+<td style="text-align: right;">-0.04</td>
+<td style="text-align: right;">-0.24</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1.10</td>
+<td style="text-align: right;">-0.28</td>
+<td style="text-align: right;">-0.17</td>
+<td style="text-align: right;">-0.08</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">-0.75</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">-0.01</td>
+<td style="text-align: right;">-0.02</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1.04</td>
+<td style="text-align: right;">-0.23</td>
+<td style="text-align: right;">0.42</td>
+<td style="text-align: right;">-0.04</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">-0.01</td>
+<td style="text-align: right;">0.72</td>
+<td style="text-align: right;">-0.28</td>
+<td style="text-align: right;">-0.01</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">-0.51</td>
+<td style="text-align: right;">1.27</td>
+<td style="text-align: right;">0.27</td>
+<td style="text-align: right;">0.05</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.51</td>
+<td style="text-align: right;">0.10</td>
+<td style="text-align: right;">-0.13</td>
+<td style="text-align: right;">0.05</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0.26</td>
+<td style="text-align: right;">0.55</td>
+<td style="text-align: right;">0.69</td>
+<td style="text-align: right;">0.06</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.98</td>
+<td style="text-align: right;">0.12</td>
+<td style="text-align: right;">0.06</td>
+<td style="text-align: right;">-0.17</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">-0.17</td>
+<td style="text-align: right;">0.25</td>
+<td style="text-align: right;">-0.09</td>
+<td style="text-align: right;">0.13</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.93</td>
+<td style="text-align: right;">-0.47</td>
+<td style="text-align: right;">0.31</td>
+<td style="text-align: right;">0.10</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0.66</td>
+<td style="text-align: right;">0.35</td>
+<td style="text-align: right;">-0.33</td>
+<td style="text-align: right;">-0.19</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.24</td>
+<td style="text-align: right;">0.33</td>
+<td style="text-align: right;">0.27</td>
+<td style="text-align: right;">-0.21</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0.94</td>
+<td style="text-align: right;">0.54</td>
+<td style="text-align: right;">0.50</td>
+<td style="text-align: right;">0.26</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.05</td>
+<td style="text-align: right;">0.58</td>
+<td style="text-align: right;">0.24</td>
+<td style="text-align: right;">-0.04</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1.12</td>
+<td style="text-align: right;">0.08</td>
+<td style="text-align: right;">-0.46</td>
+<td style="text-align: right;">-0.08</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.36</td>
+<td style="text-align: right;">0.07</td>
+<td style="text-align: right;">0.23</td>
+<td style="text-align: right;">0.12</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1.30</td>
+<td style="text-align: right;">0.33</td>
+<td style="text-align: right;">0.35</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.92</td>
+<td style="text-align: right;">0.18</td>
+<td style="text-align: right;">0.23</td>
+<td style="text-align: right;">-0.29</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0.71</td>
+<td style="text-align: right;">-0.15</td>
+<td style="text-align: right;">0.32</td>
+<td style="text-align: right;">0.04</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.90</td>
+<td style="text-align: right;">-0.33</td>
+<td style="text-align: right;">0.32</td>
+<td style="text-align: right;">0.10</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1.33</td>
+<td style="text-align: right;">-0.24</td>
+<td style="text-align: right;">0.52</td>
+<td style="text-align: right;">0.04</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1.56</td>
+<td style="text-align: right;">-0.27</td>
+<td style="text-align: right;">0.16</td>
+<td style="text-align: right;">0.07</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0.81</td>
+<td style="text-align: right;">0.16</td>
+<td style="text-align: right;">-0.04</td>
+<td style="text-align: right;">-0.03</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">-0.31</td>
+<td style="text-align: right;">0.37</td>
+<td style="text-align: right;">0.32</td>
+<td style="text-align: right;">0.07</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">-0.07</td>
+<td style="text-align: right;">0.71</td>
+<td style="text-align: right;">0.24</td>
+<td style="text-align: right;">0.01</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">-0.19</td>
+<td style="text-align: right;">0.68</td>
+<td style="text-align: right;">0.31</td>
+<td style="text-align: right;">-0.02</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0.14</td>
+<td style="text-align: right;">0.31</td>
+<td style="text-align: right;">0.18</td>
+<td style="text-align: right;">0.03</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1.38</td>
+<td style="text-align: right;">0.42</td>
+<td style="text-align: right;">-0.02</td>
+<td style="text-align: right;">-0.18</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0.59</td>
+<td style="text-align: right;">0.48</td>
+<td style="text-align: right;">-0.44</td>
+<td style="text-align: right;">-0.25</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.81</td>
+<td style="text-align: right;">-0.19</td>
+<td style="text-align: right;">-0.39</td>
+<td style="text-align: right;">-0.11</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1.22</td>
+<td style="text-align: right;">-0.41</td>
+<td style="text-align: right;">0.24</td>
+<td style="text-align: right;">0.03</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.82</td>
+<td style="text-align: right;">0.37</td>
+<td style="text-align: right;">0.61</td>
+<td style="text-align: right;">0.15</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0.25</td>
+<td style="text-align: right;">0.27</td>
+<td style="text-align: right;">-0.19</td>
+<td style="text-align: right;">-0.15</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.17</td>
+<td style="text-align: right;">0.68</td>
+<td style="text-align: right;">0.06</td>
+<td style="text-align: right;">0.03</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0.46</td>
+<td style="text-align: right;">0.67</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">-0.27</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.89</td>
+<td style="text-align: right;">0.03</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">-0.15</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0.23</td>
+<td style="text-align: right;">0.40</td>
+<td style="text-align: right;">0.23</td>
+<td style="text-align: right;">0.02</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">-0.70</td>
+<td style="text-align: right;">1.01</td>
+<td style="text-align: right;">0.11</td>
+<td style="text-align: right;">0.05</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0.36</td>
+<td style="text-align: right;">0.50</td>
+<td style="text-align: right;">-0.02</td>
+<td style="text-align: right;">-0.10</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.33</td>
+<td style="text-align: right;">0.21</td>
+<td style="text-align: right;">-0.08</td>
+<td style="text-align: right;">-0.24</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0.38</td>
+<td style="text-align: right;">0.29</td>
+<td style="text-align: right;">-0.08</td>
+<td style="text-align: right;">-0.13</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.64</td>
+<td style="text-align: right;">-0.02</td>
+<td style="text-align: right;">0.21</td>
+<td style="text-align: right;">-0.02</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">-0.91</td>
+<td style="text-align: right;">0.76</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.23</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.30</td>
+<td style="text-align: right;">0.35</td>
+<td style="text-align: right;">-0.01</td>
+<td style="text-align: right;">-0.05</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2.53</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">-0.76</td>
+<td style="text-align: right;">-0.03</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1.42</td>
+<td style="text-align: right;">0.57</td>
+<td style="text-align: right;">-0.30</td>
+<td style="text-align: right;">-0.02</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2.62</td>
+<td style="text-align: right;">-0.34</td>
+<td style="text-align: right;">0.11</td>
+<td style="text-align: right;">0.07</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1.97</td>
+<td style="text-align: right;">0.18</td>
+<td style="text-align: right;">-0.11</td>
+<td style="text-align: right;">-0.24</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2.35</td>
+<td style="text-align: right;">0.04</td>
+<td style="text-align: right;">-0.29</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">3.40</td>
+<td style="text-align: right;">-0.55</td>
+<td style="text-align: right;">0.35</td>
+<td style="text-align: right;">-0.11</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0.52</td>
+<td style="text-align: right;">1.19</td>
+<td style="text-align: right;">-0.55</td>
+<td style="text-align: right;">-0.10</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2.93</td>
+<td style="text-align: right;">-0.36</td>
+<td style="text-align: right;">0.42</td>
+<td style="text-align: right;">-0.26</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2.32</td>
+<td style="text-align: right;">0.24</td>
+<td style="text-align: right;">0.35</td>
+<td style="text-align: right;">-0.08</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2.92</td>
+<td style="text-align: right;">-0.78</td>
+<td style="text-align: right;">-0.42</td>
+<td style="text-align: right;">0.11</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1.66</td>
+<td style="text-align: right;">-0.24</td>
+<td style="text-align: right;">-0.24</td>
+<td style="text-align: right;">0.12</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1.80</td>
+<td style="text-align: right;">0.22</td>
+<td style="text-align: right;">0.04</td>
+<td style="text-align: right;">0.08</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2.17</td>
+<td style="text-align: right;">-0.22</td>
+<td style="text-align: right;">-0.03</td>
+<td style="text-align: right;">0.16</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1.35</td>
+<td style="text-align: right;">0.78</td>
+<td style="text-align: right;">-0.28</td>
+<td style="text-align: right;">0.14</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1.59</td>
+<td style="text-align: right;">0.54</td>
+<td style="text-align: right;">-0.63</td>
+<td style="text-align: right;">0.33</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1.90</td>
+<td style="text-align: right;">-0.12</td>
+<td style="text-align: right;">-0.48</td>
+<td style="text-align: right;">0.22</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1.95</td>
+<td style="text-align: right;">-0.04</td>
+<td style="text-align: right;">-0.04</td>
+<td style="text-align: right;">-0.16</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">3.49</td>
+<td style="text-align: right;">-1.18</td>
+<td style="text-align: right;">-0.13</td>
+<td style="text-align: right;">-0.31</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3.80</td>
+<td style="text-align: right;">-0.26</td>
+<td style="text-align: right;">0.51</td>
+<td style="text-align: right;">0.05</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1.30</td>
+<td style="text-align: right;">0.76</td>
+<td style="text-align: right;">0.34</td>
+<td style="text-align: right;">-0.05</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2.43</td>
+<td style="text-align: right;">-0.38</td>
+<td style="text-align: right;">-0.22</td>
+<td style="text-align: right;">0.19</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1.20</td>
+<td style="text-align: right;">0.61</td>
+<td style="text-align: right;">-0.51</td>
+<td style="text-align: right;">0.06</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3.50</td>
+<td style="text-align: right;">-0.46</td>
+<td style="text-align: right;">0.57</td>
+<td style="text-align: right;">-0.14</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1.39</td>
+<td style="text-align: right;">0.20</td>
+<td style="text-align: right;">0.06</td>
+<td style="text-align: right;">0.16</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2.28</td>
+<td style="text-align: right;">-0.33</td>
+<td style="text-align: right;">-0.29</td>
+<td style="text-align: right;">-0.06</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2.61</td>
+<td style="text-align: right;">-0.56</td>
+<td style="text-align: right;">0.21</td>
+<td style="text-align: right;">-0.24</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1.26</td>
+<td style="text-align: right;">0.18</td>
+<td style="text-align: right;">-0.05</td>
+<td style="text-align: right;">0.15</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1.29</td>
+<td style="text-align: right;">0.12</td>
+<td style="text-align: right;">-0.23</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2.12</td>
+<td style="text-align: right;">0.21</td>
+<td style="text-align: right;">-0.15</td>
+<td style="text-align: right;">0.05</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2.39</td>
+<td style="text-align: right;">-0.46</td>
+<td style="text-align: right;">0.45</td>
+<td style="text-align: right;">-0.23</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2.84</td>
+<td style="text-align: right;">-0.38</td>
+<td style="text-align: right;">0.50</td>
+<td style="text-align: right;">-0.02</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">3.23</td>
+<td style="text-align: right;">-1.37</td>
+<td style="text-align: right;">0.11</td>
+<td style="text-align: right;">-0.25</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2.16</td>
+<td style="text-align: right;">0.22</td>
+<td style="text-align: right;">-0.21</td>
+<td style="text-align: right;">0.13</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1.44</td>
+<td style="text-align: right;">0.14</td>
+<td style="text-align: right;">0.15</td>
+<td style="text-align: right;">-0.19</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1.78</td>
+<td style="text-align: right;">0.50</td>
+<td style="text-align: right;">0.17</td>
+<td style="text-align: right;">-0.51</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">3.08</td>
+<td style="text-align: right;">-0.69</td>
+<td style="text-align: right;">0.34</td>
+<td style="text-align: right;">0.31</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2.14</td>
+<td style="text-align: right;">-0.14</td>
+<td style="text-align: right;">-0.73</td>
+<td style="text-align: right;">0.06</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1.91</td>
+<td style="text-align: right;">-0.05</td>
+<td style="text-align: right;">-0.16</td>
+<td style="text-align: right;">-0.22</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1.17</td>
+<td style="text-align: right;">0.16</td>
+<td style="text-align: right;">-0.28</td>
+<td style="text-align: right;">0.02</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2.11</td>
+<td style="text-align: right;">-0.37</td>
+<td style="text-align: right;">-0.03</td>
+<td style="text-align: right;">0.21</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2.31</td>
+<td style="text-align: right;">-0.18</td>
+<td style="text-align: right;">-0.32</td>
+<td style="text-align: right;">0.28</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1.92</td>
+<td style="text-align: right;">-0.41</td>
+<td style="text-align: right;">-0.11</td>
+<td style="text-align: right;">0.51</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1.42</td>
+<td style="text-align: right;">0.57</td>
+<td style="text-align: right;">-0.30</td>
+<td style="text-align: right;">-0.02</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2.56</td>
+<td style="text-align: right;">-0.28</td>
+<td style="text-align: right;">-0.29</td>
+<td style="text-align: right;">0.06</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2.42</td>
+<td style="text-align: right;">-0.30</td>
+<td style="text-align: right;">-0.50</td>
+<td style="text-align: right;">0.24</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1.94</td>
+<td style="text-align: right;">-0.19</td>
+<td style="text-align: right;">-0.18</td>
+<td style="text-align: right;">0.43</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1.53</td>
+<td style="text-align: right;">0.38</td>
+<td style="text-align: right;">0.12</td>
+<td style="text-align: right;">0.25</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1.76</td>
+<td style="text-align: right;">-0.08</td>
+<td style="text-align: right;">-0.13</td>
+<td style="text-align: right;">0.14</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1.90</td>
+<td style="text-align: right;">-0.12</td>
+<td style="text-align: right;">-0.72</td>
+<td style="text-align: right;">0.04</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1.39</td>
+<td style="text-align: right;">0.28</td>
+<td style="text-align: right;">-0.36</td>
+<td style="text-align: right;">-0.16</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+</div>
+</div>
+<p>Dimension reduction is done by just taking the first two columns of the score matrix.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>iris_scores <span class="ot">&lt;-</span> iris_centered<span class="sc">%*%</span>iris_eigen<span class="sc">$</span>vectors</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(iris_scores) <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">"Comp."</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="at">sep =</span> <span class="st">""</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>iris_scores[,<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="multivariate_statistics_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="480"></p>
+</figure>
+</div>
+</div>
+</div>
 </section>
 </section>
 <section id="factor-analysis" class="level1">
