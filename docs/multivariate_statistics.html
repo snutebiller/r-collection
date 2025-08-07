@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.57">
+<meta name="generator" content="quarto-1.6.42">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -69,10 +69,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-54ebed522ef0dc2f427e72bc89b6c217.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -200,6 +200,7 @@ window.Quarto = {
   <li><a href="#factor-analysis" id="toc-factor-analysis" class="nav-link" data-scroll-target="#factor-analysis">Factor Analysis</a>
   <ul class="collapse">
   <li><a href="#factor-model" id="toc-factor-model" class="nav-link" data-scroll-target="#factor-model">Factor Model</a></li>
+  <li><a href="#estimation" id="toc-estimation" class="nav-link" data-scroll-target="#estimation">Estimation</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -1756,11 +1757,11 @@ run800m   0.303  0.657 -0.193 -0.574 -0.319              </code></pre>
 <section id="factor-model" class="level2">
 <h2 class="anchored" data-anchor-id="factor-model">Factor Model</h2>
 <p>The factor model in matrix notation is as follows <span class="math display">\[
-X = \Lambda f + u
+X =\pmb{\Lambda} f + u
 \]</span> in which</p>
 <ul>
 <li><span class="math inline">\(X \in \mathbb{R}^q\)</span> are the observed variables,</li>
-<li><span class="math inline">\(\Lambda\)</span> is a <span class="math inline">\(q\times k\)</span> matrix containing the factor loadings,</li>
+<li><span class="math inline">\(\pmb{\Lambda} \in \mathbb{R}^{q\times k}\)</span> matrix containing the factor loadings,</li>
 <li><span class="math inline">\(f \in \mathbb{R}^k\)</span> are the latent/common factors,</li>
 <li><span class="math inline">\(u \in \mathbb{R}^q\)</span> are the specific factors.</li>
 </ul>
@@ -1775,15 +1776,39 @@ X = \Lambda f + u
 </ul>
 <p>These assumptions imply that the common factors and the observed variables are uncorrelated. The correlation is established by the latent factors <span class="math inline">\(\Lambda\)</span>.</p>
 <p><span class="math display">\[\begin{align*}
-\Sigma &amp;= \mathrm{Cov}(\Lambda f+u) \\
-&amp;= \mathrm{Cov}(\Lambda f) + \mathrm{Cov}(u) \\
-&amp;= \Lambda\mathrm{Cov}(f)\Lambda^T+\Psi\\
-&amp;= \Lambda\Lambda^T + \Psi\\
+\pmb{\Sigma} &amp;= \mathrm{Cov}(\pmb{\Lambda} f+u) \\
+&amp;= \mathrm{Cov}(\pmb{\Lambda} f) + \mathrm{Cov}(u) \\
+&amp;= \pmb{\Lambda}\mathrm{Cov}(f)\pmb{\Lambda}^T+\pmb{\Psi}\\
+&amp;= \pmb{\Lambda\Lambda}^T + \pmb{\Psi}\\
 \end{align*}\]</span></p>
 <p>Writing as scalars, this equals <span class="math display">\[
 \sigma^2_j = \Sigma_{l=1}^k \lambda^2_{jl} + \psi_j = h_j^2 + \psi_j
 \]</span></p>
 <p>in which <span class="math inline">\(h_j^2\)</span> is the communality, the variance resulting from the latent factors, and <span class="math inline">\(\psi_j\)</span> the specific variance, that is not shared among the observed variables. If the above expression holds, then the factor model holds for <span class="math inline">\(X\)</span>.</p>
+<p>The factor model is scale-invariant, meaning that scaling the loadings and specific variances after applying factor analysis is equal to applying factor analysis to scaled variables.</p>
+<p><span class="math display">\[\begin{align*}
+\pmb{Y} &amp;= \pmb{CX}, \pmb{C} = \mathrm{diag}(c_j)\\
+\mathrm{Cov}(\pmb{Y}) &amp;= \pmb{C}\mathrm{Cov}(\pmb{X})\pmb{C}^T \\
+&amp;= (\pmb{C\Lambda})(\pmb{C\Lambda})^T + \pmb{C\Psi C}^T \\
+&amp;= \tilde{\pmb{\Lambda}}\tilde{\pmb{\Lambda}}^T + \tilde{\pmb{\Psi}}\\
+\tilde{\pmb{\Lambda}} &amp;= \pmb{C\Lambda}, \tilde{\pmb{\Psi}} = \pmb{C\Psi C}^T
+\end{align*}\]</span></p>
+</section>
+<section id="estimation" class="level2">
+<h2 class="anchored" data-anchor-id="estimation">Estimation</h2>
+<p>Both the factor loadings <span class="math inline">\(\pmb{\Lambda}\)</span> and the specific variances <span class="math inline">\(\pmb{\Psi}\)</span> require estimation. They are connected to the covariance matrix <span class="math inline">\(\pmb{\Sigma}\)</span> by the expression <span class="math display">\[
+\pmb{\Sigma} = \pmb{\Lambda\Lambda}^T + \pmb{\Psi}
+\]</span></p>
+<p>Estimation of both <span class="math inline">\(\pmb{\Lambda}\)</span> and <span class="math inline">\(\pmb{\Psi}\)</span> from this equation starts by initializing <span class="math inline">\(\hat{\pmb{\Psi}}\)</span> with <span class="math display">\[
+\hat{\psi}_j = 1-\hat{h}_j^2
+\]</span> in which <span class="math inline">\(\hat{h}_j^2\)</span> is either the square of the multiple correlation coefficient of the <span class="math inline">\(j\)</span>-th variable with all other variables or the largest correlation coefficient between <span class="math inline">\(j\)</span> and another variable. Subsequently, <span class="math inline">\(\pmb{\Lambda}\)</span> can be estimated by spectral decomposition (using the correlation matrix <span class="math inline">\(\pmb{R}\)</span> instead of the covariance matrix) of <span class="math display">\[
+\pmb{R}-\hat{\pmb{\Psi}} = \hat{\pmb{\Lambda}}\hat{\pmb{\Lambda}}^T = \pmb{A\Omega A}^T = \left(\pmb{A\Omega^\frac{1}{2}}\right) \left(\pmb{A\Omega^\frac{1}{2}}\right)^T
+\]</span> Only the first <span class="math inline">\(k\)</span> eigenvalues and eigenvectors are kept, corresponding to the number of factors chosen for the model. These reduced eigenvalues and eigenvectors are used to populate the loadings <span class="math display">\[
+\hat{\pmb{\Lambda}}  = \pmb{A_1\Omega_1}^\frac{1}{2}
+\]</span></p>
+<p>This estimate is then used to estimate the specific factors <span class="math inline">\(\hat{\pmb{\Psi}}\)</span> <span class="math display">\[
+\hat{\pmb{\Psi}} = \pmb{R} - \hat{\pmb{\Lambda}}\hat{\pmb{\Lambda}}^T
+\]</span></p>
 
 
 </section>
@@ -1872,8 +1897,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
   clipboard.on('success', onCopySuccess);
   if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-    // For code content inside modals, clipBoardJS needs to be initialized with a container option
-    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
     const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
       text: getTextToCopy,
       container: window.document.getElementById('quarto-embedded-source-code-modal')
@@ -1984,7 +2007,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
-      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {

@@ -304,12 +304,12 @@ Factor analysis serves to find underlying latent factors to observed variables. 
 ## Factor Model
 The factor model in matrix notation is as follows
 $$
-X = \Lambda f + u
+X =\pmb{\Lambda} f + u
 $$
 in which
 
 * $X \in \mathbb{R}^q$ are the observed variables,
-* $\Lambda$ is a $q\times k$ matrix containing the factor loadings,
+* $\pmb{\Lambda} \in \mathbb{R}^{q\times k}$ matrix containing the factor loadings,
 * $f \in \mathbb{R}^k$ are the latent/common factors,
 * $u \in \mathbb{R}^q$ are the specific factors.
 
@@ -326,10 +326,10 @@ A number of things are assumed
 These assumptions imply that the common factors and the observed variables are uncorrelated. The correlation is established by the latent factors $\Lambda$.
 
 \begin{align*}
-\Sigma &= \Cov(\Lambda f+u) \\
-&= \Cov(\Lambda f) + \Cov(u) \\
-&= \Lambda\Cov(f)\Lambda^T+\Psi\\
-&= \Lambda\Lambda^T + \Psi\\
+\pmb{\Sigma} &= \Cov(\pmb{\Lambda} f+u) \\
+&= \Cov(\pmb{\Lambda} f) + \Cov(u) \\
+&= \pmb{\Lambda}\Cov(f)\pmb{\Lambda}^T+\pmb{\Psi}\\
+&= \pmb{\Lambda\Lambda}^T + \pmb{\Psi}\\
 \end{align*}
 
 Writing as scalars, this equals
@@ -338,3 +338,38 @@ $$
 $$
 
 in which $h_j^2$ is the communality, the variance resulting from the latent factors, and $\psi_j$ the specific variance, that is not shared among the observed variables. If the above expression holds, then the factor model holds for $X$. 
+
+The factor model is scale-invariant, meaning that scaling the loadings and specific variances after applying factor analysis is equal to applying factor analysis to scaled variables.
+
+\begin{align*}
+\pmb{Y} &= \pmb{CX}, \pmb{C} = \mathrm{diag}(c_j)\\
+\Cov(\pmb{Y}) &= \pmb{C}\Cov(\pmb{X})\pmb{C}^T \\
+&= (\pmb{C\Lambda})(\pmb{C\Lambda})^T + \pmb{C\Psi C}^T \\
+&= \tilde{\pmb{\Lambda}}\tilde{\pmb{\Lambda}}^T + \tilde{\pmb{\Psi}}\\
+\tilde{\pmb{\Lambda}} &= \pmb{C\Lambda}, \tilde{\pmb{\Psi}} = \pmb{C\Psi C}^T
+\end{align*}
+
+## Estimation
+Both the factor loadings $\pmb{\Lambda}$ and the specific variances $\pmb{\Psi}$ require estimation. They are connected to the covariance matrix $\pmb{\Sigma}$ by the expression
+$$
+\pmb{\Sigma} = \pmb{\Lambda\Lambda}^T + \pmb{\Psi}
+$$
+
+Estimation of both $\pmb{\Lambda}$ and $\pmb{\Psi}$ from this equation starts by initializing $\hat{\pmb{\Psi}}$ with
+$$
+\hat{\psi}_j = 1-\hat{h}_j^2
+$$
+in which $\hat{h}_j^2$ is either the square of the multiple correlation coefficient of the $j$-th variable with all other variables or the largest correlation coefficient between $j$ and another variable. Subsequently, $\pmb{\Lambda}$ can be estimated by spectral decomposition (using the correlation matrix $\pmb{R}$ instead of the covariance matrix) of
+$$
+\pmb{R}-\hat{\pmb{\Psi}} = \hat{\pmb{\Lambda}}\hat{\pmb{\Lambda}}^T = \pmb{A\Omega A}^T = \left(\pmb{A\Omega^\frac{1}{2}}\right) \left(\pmb{A\Omega^\frac{1}{2}}\right)^T
+$$
+Only the first $k$ eigenvalues and eigenvectors are kept, corresponding to the number of factors chosen for the model. These reduced eigenvalues and eigenvectors are used to populate the loadings \pmb{\Lambda}
+$$
+\hat{\pmb{\Lambda}}  = \pmb{A_1\Omega_1}^\frac{1}{2}
+$$
+
+This estimate is then used to estimate the specific factors $\hat{\pmb{\Psi}}$
+$$
+\hat{\pmb{\Psi}} = \pmb{R} - \hat{\pmb{\Lambda}}\hat{\pmb{\Lambda}}^T 
+$$
+
