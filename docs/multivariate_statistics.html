@@ -201,6 +201,11 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#factor-model" id="toc-factor-model" class="nav-link" data-scroll-target="#factor-model">Factor Model</a></li>
   <li><a href="#estimation" id="toc-estimation" class="nav-link" data-scroll-target="#estimation">Estimation</a></li>
+  <li><a href="#heywood-cases" id="toc-heywood-cases" class="nav-link" data-scroll-target="#heywood-cases">Heywood Cases</a></li>
+  <li><a href="#number-of-factors" id="toc-number-of-factors" class="nav-link" data-scroll-target="#number-of-factors">Number of Factors</a></li>
+  <li><a href="#interpretation-of-factor-loadings" id="toc-interpretation-of-factor-loadings" class="nav-link" data-scroll-target="#interpretation-of-factor-loadings">Interpretation of Factor Loadings</a></li>
+  <li><a href="#estimation-of-factor-scores" id="toc-estimation-of-factor-scores" class="nav-link" data-scroll-target="#estimation-of-factor-scores">Estimation of Factor Scores</a></li>
+  <li><a href="#comparison-between-fa-pca" id="toc-comparison-between-fa-pca" class="nav-link" data-scroll-target="#comparison-between-fa-pca">Comparison between FA &amp; PCA</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -1808,7 +1813,67 @@ X =\pmb{\Lambda} f + u
 \]</span></p>
 <p>This estimate is then used to estimate the specific factors <span class="math inline">\(\hat{\pmb{\Psi}}\)</span> <span class="math display">\[
 \hat{\pmb{\Psi}} = \pmb{R} - \hat{\pmb{\Lambda}}\hat{\pmb{\Lambda}}^T
-\]</span></p>
+\]</span> <span class="math inline">\(\hat{\pmb{\Lambda}}\)</span> and <span class="math inline">\(\hat{\pmb{\Psi}}\)</span> are iteratively re-estimated until convergence. Alternatively, parameter estimation can be done by using maximum likelyhood estimation, assuming that the variables follow a multivariate normal distribution.</p>
+<p><span class="math display">\[
+l\left(\pmb{\Psi}, \pmb{\Lambda}\right) = -\frac{n}{2}\left(\log\left(2\pi\pmb{\Sigma}\right)+\mathrm{Tr}\left(\pmb{\Sigma}^{-1}S\right)\right)
+\]</span> Factor analysis using the maximum likelyhood approach is available in <code>R</code> via the <code>factanal</code> function.</p>
+</section>
+<section id="heywood-cases" class="level2">
+<h2 class="anchored" data-anchor-id="heywood-cases">Heywood Cases</h2>
+<p>It is possible that some <span class="math inline">\(\hat{\psi}_j &lt; 0\)</span> or <span class="math inline">\(\hat{\psi}_j &gt; 1\)</span>. These cases are called <em>Heywood cases</em> and violate that variances need to be positive and the normalization of the variance per variable <span class="math display">\[
+1 = \hat{h}_j^2 + \hat{\psi}_j
+\]</span> Heywood cases can be approached by</p>
+<ul>
+<li>collecting more data,</li>
+<li>using a different model (number of factors, variables),</li>
+<li>trying a different estimation technique.</li>
+</ul>
+</section>
+<section id="number-of-factors" class="level2">
+<h2 class="anchored" data-anchor-id="number-of-factors">Number of Factors</h2>
+<p>Hypothesis testing can be used to test whether the chosen number of factors is sufficient. The hypotheses are <span class="math display">\[\begin{align*}
+H_0&amp;: \text{$k$-factor model holds true} \\
+H_1&amp;: \text{$\pmb{\Sigma}$ is more general (higher k necessary)}\\
+\end{align*}\]</span> This hypothesis test included in the <code>R</code> output of factor analysis by default.</p>
+</section>
+<section id="interpretation-of-factor-loadings" class="level2">
+<h2 class="anchored" data-anchor-id="interpretation-of-factor-loadings">Interpretation of Factor Loadings</h2>
+<p>There is no precise way of interpreting factor loadings, it can rather involve creativity and be debatable. Interpretation of factor loadings may be facilitated by rotations, which may change the loadings to be more interpretable. This is possible due to the <em>non-uniqueness</em> of a factor model.</p>
+<p>Assuming a rotation matrix <span class="math inline">\(\pmb{M}\)</span> and transformations <span class="math inline">\(f^* = \pmb{M}^Tf\)</span> and <span class="math inline">\(\pmb{\Lambda}^* = \pmb{\Lambda}\pmb{M}\)</span>, it can be shown that the resulting factor model is identical to the untransformed model.</p>
+<p><span class="math display">\[\begin{align*}
+\pmb{X}^* &amp;= \pmb{\Lambda}^* f^* + u = \left(\pmb{\Lambda}\pmb{M}\right)\left(\pmb{M}^T f\right) + u = \pmb{\Lambda} f + u = \pmb{X} \\
+\pmb{\Sigma}^* &amp;= \pmb{\Lambda}^*{\pmb{\Lambda}^*}^T + \pmb{\Psi} = \left(\pmb{\Lambda}\pmb{M}\right)\left(\pmb{\Lambda}\pmb{M}\right)^T + \pmb{\Psi} = \pmb{\Lambda}\pmb{\Lambda}^T + \pmb{\Psi} =\pmb{\Sigma}
+\end{align*}\]</span></p>
+<p>Non-uniqueness can be approached by imposing restrictions on the model parametrization, which is commonly done by estimation procedures. In addition, the rotations mentioned above can be used to increase the interpretability of the factor loadings. Interpretation is made easier if every variable has a high loading on at most one factor, and if all factor loadings are either large and positive, or zero. Two types of rotations exist that attempt to acheive this.</p>
+<ul>
+<li><strong>Orthogonal rotations</strong> require the factors to be uncorrelated. This is useful, since the loadings still represent covariances between latent factors and observed variables. The <em>varimax</em> rotation is a commonly used orthogonal rotation and default in the <code>factanal</code> function of <code>R</code>.</li>
+<li><strong>Oblique rotations</strong> allow the factors to be correlated, as it may lead to better interpretable factors. The <em>promax</em> rotation is an example for an oblique rotation which aims at a simple structure with low correlation between factors.</li>
+</ul>
+</section>
+<section id="estimation-of-factor-scores" class="level2">
+<h2 class="anchored" data-anchor-id="estimation-of-factor-scores">Estimation of Factor Scores</h2>
+<p>It is possible to estimate factor scores for individual observations that represent scores of latent variables. Multiple methods of estimating factor scores exist, but they often yield very similar results in practice.</p>
+<p><strong>Thompson’s method</strong> estimates factor scores <span class="math inline">\(\hat{f}_i \in \mathbb{R}^k\)</span> by <span class="math display">\[
+\hat{f}_i = \hat{\pmb{\Lambda}}^T\hat{\pmb{\Sigma}}^{-1}x_i
+\]</span> which is available via the option <code>scores="regression"</code> in the <code>R</code> function <code>factanal</code>.</p>
+</section>
+<section id="comparison-between-fa-pca" class="level2">
+<h2 class="anchored" data-anchor-id="comparison-between-fa-pca">Comparison between FA &amp; PCA</h2>
+<p>Comparing the models of factor analysis and principle component analysis <span class="math display">\[\begin{align*}
+\text{FA: } \pmb{X} &amp;= \pmb{\Lambda}f + u\\
+\text{PCA: } X &amp;= \pmb{A}_1^T Y^{(1)}+ \pmb{A}_2^T Y^{(2)} =  \pmb{A}_1^T Y^{(1)} + e
+\end{align*}\]</span> shows that one of the differences is that <span class="math inline">\(\mathrm{Cov}(u)\)</span> is diagonal by assumption, while <span class="math inline">\(\mathrm{Cov}(e)\)</span> is usually not diagonal.</p>
+<ul>
+<li>FA and PCA reduce the dimensionality of data</li>
+<li>Do not yield results if the observed variables are uncorrelated
+<ul>
+<li>PC components are similar to the original variables</li>
+<li>FA cannot find variance shared among the variables, thus the specific variance will be close to one</li>
+</ul></li>
+<li>The results of PCA and FA become more similar, the smaller the specific variance is. The results become identical (up to rotation) if the specific variance is zero <span class="math display">\[
+\pmb{\Sigma} = \pmb{\Lambda}\pmb{\Lambda}^T + \pmb{\Psi} \overset{\pmb{\Psi} = 0}{=}  \pmb{\Lambda}\pmb{\Lambda}^T
+\]</span> The resulting spectral decomposition is the same for both PCA and FA</li>
+</ul>
 
 
 </section>

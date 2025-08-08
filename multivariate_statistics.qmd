@@ -372,4 +372,70 @@ This estimate is then used to estimate the specific factors $\hat{\pmb{\Psi}}$
 $$
 \hat{\pmb{\Psi}} = \pmb{R} - \hat{\pmb{\Lambda}}\hat{\pmb{\Lambda}}^T 
 $$
+$\hat{\pmb{\Lambda}}$ and $\hat{\pmb{\Psi}}$ are iteratively re-estimated until convergence. Alternatively, parameter estimation can be done by using maximum likelyhood estimation, assuming that the variables follow a multivariate normal distribution.
 
+$$
+l\left(\pmb{\Psi}, \pmb{\Lambda}\right) = -\frac{n}{2}\left(\log\left(2\pi\pmb{\Sigma}\right)+\Tr{\pmb{\Sigma}^{-1}S}\right)
+$$
+Factor analysis using the maximum likelyhood approach is available in `R` via the `factanal` function.
+
+## Heywood Cases
+It is possible that some $\hat{\psi}_j < 0$ or $\hat{\psi}_j > 1$. These cases are called _Heywood cases_ and violate that variances need to be positive and the normalization of the variance per variable
+$$
+ 1 = \hat{h}_j^2 + \hat{\psi}_j
+$$
+Heywood cases can be approached by 
+
+- collecting more data,
+- using a different model (number of factors, variables),
+- trying a different estimation technique.
+
+## Number of Factors
+Hypothesis testing can be used to test whether the chosen number of factors is sufficient. The hypotheses are
+\begin{align*}
+H_0&: \text{$k$-factor model holds true} \\
+H_1&: \text{$\pmb{\Sigma}$ is more general (higher k necessary)}\\
+\end{align*}
+This hypothesis test included in the `R` output of factor analysis by default.
+
+## Interpretation of Factor Loadings
+There is no precise way of interpreting factor loadings, it can rather involve creativity and be debatable. Interpretation of factor loadings may be facilitated by rotations, which may change the loadings to be more interpretable. This is possible due to the _non-uniqueness_ of a factor model.
+
+Assuming a rotation matrix $\pmb{M}$ and transformations $f^* = \pmb{M}^Tf$ and $\pmb{\Lambda}^* = \pmb{\Lambda}\pmb{M}$, it can be shown that the resulting factor model is identical to the untransformed model.
+
+\begin{align*}
+\pmb{X}^* &= \pmb{\Lambda}^* f^* + u = \left(\pmb{\Lambda}\pmb{M}\right)\left(\pmb{M}^T f\right) + u = \pmb{\Lambda} f + u = \pmb{X} \\
+\pmb{\Sigma}^* &= \pmb{\Lambda}^*{\pmb{\Lambda}^*}^T + \pmb{\Psi} = \left(\pmb{\Lambda}\pmb{M}\right)\left(\pmb{\Lambda}\pmb{M}\right)^T + \pmb{\Psi} = \pmb{\Lambda}\pmb{\Lambda}^T + \pmb{\Psi} =\pmb{\Sigma}
+\end{align*}
+
+Non-uniqueness can be approached by imposing restrictions on the model parametrization, which is commonly done by estimation procedures. In addition, the rotations mentioned above can be used to increase the interpretability of the factor loadings. Interpretation is made easier if every variable has a high loading on at most one factor, and if all factor loadings are either large and positive, or zero. Two types of rotations exist that attempt to acheive this.
+
+- **Orthogonal rotations** require the factors to be uncorrelated. This is useful, since the loadings still represent covariances between latent factors and observed variables. The _varimax_ rotation is a commonly used orthogonal rotation and default in the `factanal` function of `R`.
+- **Oblique rotations** allow the factors to be correlated, as it may lead to better interpretable factors. The _promax_ rotation is an example for an oblique rotation which aims at a simple structure with low correlation between factors.
+
+## Estimation of Factor Scores
+It is possible to estimate factor scores for individual observations that represent scores of latent variables. Multiple methods of estimating factor scores exist, but they often yield very similar results in practice.
+
+**Thompson's method** estimates factor scores $\hat{f}_i \in \mathbb{R}^k$ by
+$$
+\hat{f}_i = \hat{\pmb{\Lambda}}^T\hat{\pmb{\Sigma}}^{-1}x_i
+$$
+which is available via the option `scores="regression"` in the `R` function `factanal`.
+
+## Comparison between FA & PCA
+Comparing the models of factor analysis and principle component analysis
+\begin{align*}
+\text{FA: } \pmb{X} &= \pmb{\Lambda}f + u\\
+\text{PCA: } X &= \pmb{A}_1^T Y^{(1)}+ \pmb{A}_2^T Y^{(2)} =  \pmb{A}_1^T Y^{(1)} + e
+\end{align*}
+shows that one of the differences is that $\Cov(u)$ is diagonal by assumption, while $\Cov(e)$ is usually not diagonal.
+
+- FA and PCA reduce the dimensionality of data
+- Do not yield results if the observed variables are uncorrelated
+  - PC components are similar to the original variables
+  - FA cannot find variance shared among the variables, thus the specific variance will be close to one
+- The results of PCA and FA become more similar, the smaller the specific variance is. The results become identical (up to rotation) if the specific variance is zero
+$$
+\pmb{\Sigma} = \pmb{\Lambda}\pmb{\Lambda}^T + \pmb{\Psi} \overset{\pmb{\Psi} = 0}{=}  \pmb{\Lambda}\pmb{\Lambda}^T 
+$$
+The resulting spectral decomposition is the same for both PCA and FA
