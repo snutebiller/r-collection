@@ -8,7 +8,7 @@ website:
     left:
       - href: index.qmd
         text: ggplot2
-      - regression.qmd
+      # - regression.qmd
       - href: multivariate_statistics.qmd
         text: multivariate statistics
 
