@@ -16,6 +16,7 @@ library(ggplot2)
 library(kableExtra)
 library(MVA)
 library(corrplot)
+library(cowplot)
 gg_options <- list(
   theme_linedraw(base_size = 8),
   scale_color_manual(values = palette.colors(palette = 'Okabe-Ito')),
@@ -27,6 +28,8 @@ gg_options <- list(
 \newcommand\Cor{\mathrm{Cor}}
 \newcommand\Tr[1]{\mathrm{Tr}\left(#1\right)}
 \newcommand\mb[1]{\bm{#1}}
+\DeclareMathOperator*{\argmax}{\arg\!\max}
+
 This page is based on the lecture Applied Multivariate Statistics [401-0102-00L](https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?semkez=2025S&ansicht=KATALOGDATEN&lerneinheitId=187848&lang=en) held by Fabio Sigrist at ETH Zurich.
 
 # Principal Component Analysis {#sec-pca}
@@ -450,19 +453,169 @@ The key idea of ICA to identify individual signals in a mixture is to use **non-
 Independent component analysis is a non-Gaussian alternative to PCA and FA. In addition, using the non-Gaussianity criterion allows to determine latent factors more uniquely than FA. 
 
 ## Independent Component Model
-The independent component model is a linear, and noise-free model, that assumes that a mixing matrix $\pmb{B} \in \mathbb{R}^{q\times k}$ mixes the latent sources $\pmb{S} \in \mathbb{R}^k$ using linear combinations into the observed variables $\pmb{X} \in \mathbb{R}^q$, given that $E(\pmb{X}) = 0$.
+The independent component model is a linear, and noise-free model, that assumes that a mixing matrix $\pmb{B} \in \mathbb{R}^{q\times k}$ mixes the latent sources $S \in \mathbb{R}^k$ using linear combinations into the observed variables $X \in \mathbb{R}^q$, given that $E(\pmb{X}) = 0$.
 
 $$
-\pmb{X} = \pmb{BS}
+X = \pmb{B}S
 $$
 
-The goal is to find an **unmixing matrix** $\pmb{W} \in \mathbb{R}^{k\times q}$ that can separate the observed data into the latent sources. $\pmb{X}$ and $\pmb{S}$ are random vectors, while $\pmb{B}$ and $\pmb{W}$ are constant.
+The goal is to find an **unmixing matrix** $\pmb{W} \in \mathbb{R}^{k\times q}$ that can separate the observed data into the latent sources. $X$ and $S$ are random vectors, while $\pmb{B}$ and $\pmb{W}$ are constant.
 
 $$
-\pmb{S} = \pmb{WX}
+S = \pmb{W}X
 $$
 
-Observed variables need to be **pre-whitened** to be used for ICA, as this reduces the number of parameters that have to be estimated. Pre-whitening transforms the observed data $\pmb{X}$ such that the transformed, pre-whitened variables $\pmb{X}^W$ have a variance of one and are uncorrelated to each other. Pre-whitening can be achieved by using the result of the spectral decomposition of the data covariance matrix $\Cov(\pmb{X}) = \pmb{\Sigma}$.
+Observed variables need to be **pre-whitened** to be used for ICA, as this reduces the number of parameters that have to be estimated. Pre-whitening transforms the observed data $X$ such that the transformed, pre-whitened variables $X^W$ have a variance of one and are uncorrelated to each other. Pre-whitening can be achieved by using the result of the spectral decomposition of the data covariance matrix $\Cov(X) = \pmb{\Sigma}$.
 $$
-\pmb{X}^W = \pmb{\Sigma}^{-\frac{1}{2}}\pmb{X} = \pmb{AD}^{-\frac{1}{2}}\pmb{A}^T\pmb{X}
+X^W = \pmb{\Sigma}^{-\frac{1}{2}}X = \pmb{AD}^{-\frac{1}{2}}\pmb{A}^TX
 $$
+Due to the pre-whitening, the covariance matrix of the transformed data is $\Cov(X^W) = \pmb{I}$. The pre-whitened data does not correspond to the latent signals, as rotation of $X^W$ by any rotation matrix does not change the structure of the covariance matrix $\Cov(\pmb{OX}^W) = \pmb{OO}^T = \pmb{I}$. 
+
+Key to the independent component analysis is that if the model holds true, there is a unique matrix $\pmb{M} \in \mathbb{R}^{q\times k}$ with $\pmb{M}^T\pmb{M} = I_k$ such that 
+$$
+\pmb{M}^TX^W = S
+$$
+
+Combining this with the pre-whitening, an unmixing matrix $\pmb{W}$ can be found
+$$
+S = \pmb{M}^TX^W = \pmb{M}^T\pmb{AD}^{-\frac{1}{2}}\pmb{A}^TX = \pmb{W}X
+$$
+Since $X^W$ can be inferred from the covariance matrix of $X$, only $\pmb{M}^T$ has to be estimated. This estimation is based on the non-Gaussianity assumption mentioned previously, and allows to uniquely identify the latent sources $S$. If the sources are gaussian distributed, the latent sources can only be identified up to rotations (as $\pmb{M}^T$ is not identifiable). 
+
+## Estimation
+The independent component model is estimated by rotating the pre-whitened data $X^W$ with the matrix $\pmb{M}^T$ such that the non-Gaussianity of the resulting latent sources $S$ are maximal.
+
+The **excess kurtosis** $\kappa$ 
+$$
+\kappa(Y) = E\left(Y^4\right)-3
+$$
+
+is a measure of deviation from the Gaussian distribution, in which positive kurtosis indicates that the underlying distribution has larger tails than a Gaussian distribution and thus produces more outliers, while negative kurtosis indicates smaller tails and thus less outliers.
+
+Finding a component can be accomplished by choosing $M_1 = \left(M_{11}, \dots, M_{1q}\right)^T$  such that the linear combination of $M_1$ and $X^W$ has maximal kurtosis, under the condition that $M_1$ is normalized.
+$$
+M_1 = \argmax_{M_1\in\mathbb{R}^q:|M_1|_2=1} \kappa\left(M_1^TX^W\right)
+$$
+
+Importantly, the relation
+$$
+\kappa\left(M_1^TX^W\right) \leq \max_{1\leq j\leq k}\kappa\left(S_j\right)
+$$
+justifies that a source is found when the kurtosis is maximized.
+
+Estimating all the $M_j$ can be done either iteratively for the individual $M_j$ or for all the $M_j$ together. The iterative approach is  called _one-by-one_ or _deflation_ approach, and requires that $M_j$ are orthogonal to previous components. 
+$$
+M_j = \argmax_{M_j\in\mathbb{R}^q:|M_j|_2=1} \kappa\left(M_j^TX^W\right)
+$$
+for which
+$$
+M_j^TM_i = 0
+$$
+with $i = 1, \dots, j -2$. Algorithmic implementations are dependent on initial values, thus rerunning the algorithm multiple times with different initial values or seeds may be helpful.
+
+The joint approach for estimating $M_j$ is called _symmetric_ or _parallel_ approach, and maximizes the sum of all kurtoses.
+$$
+\pmb{M} = \argmax_{|M_1|_2=1,\dots,|M_k|_2=1} \kappa\left(M_1^TX^W\right)+ \dots + \kappa\left(M_k^TX^W\right)
+$$
+
+## Example
+Example images (cropped to same dimensions)
+```{r}
+library(imager)
+
+crop_center <- function(df, dimvec) {
+  ddf <- dim(df)
+  m <- as.matrix(df)
+  r1 <- ((ddf[1]-dimvec[1])/2):((ddf[1]+dimvec[1])/2)
+  r2 <- ((ddf[2]-dimvec[2])/2):((ddf[2]+dimvec[2])/2)
+  res <- m[r1,r2]
+  res <- res[1:dimvec[1], 1:dimvec[2]]
+  res
+}
+
+imMtoDF <- function(m){
+  m <- as.matrix(m)
+  cols <- rep(ncol(m):1, each = nrow(m))
+  rows <- rep(1:nrow(m), ncol(m))
+  df <- data.frame(x = rows, y = cols, z = as.vector(m))
+  df
+}
+
+p1 <- load.image('data/Pablo_picasso.jpg')
+p2 <- load.image('data/Michael_Jackson.jpg')
+
+ica_p_dims <- c(min(dim(p1)[1], dim(p2)[1]), min(dim(p1)[2], dim(p2)[2]))
+
+p1 <- imMtoDF(crop_center(p1, ica_p_dims))
+p2 <- imMtoDF(crop_center(p2, ica_p_dims))
+
+ica_g_options <- list(
+  geom_tile(),
+  scale_fill_gradient(low = 'black', high = 'white'),
+  theme(legend.position = 'none')
+)
+
+ica_g1 <- ggplot(p1, aes(x = x, y = y, fill = z)) +
+  ica_g_options
+
+ica_g2 <- ggplot(p2, aes(x = x, y = y, fill = z)) +
+  ica_g_options
+
+plot_grid(ica_g1, ica_g2)
+
+
+```
+
+```{r}
+ica_weights <- list(c(0.2, 0.8), c(0.7, 0.3), c(0.4, 0.1), c(0.1, 0.3))
+
+set.seed(78)
+tot_pix <- nrow(p1)
+ica_mixed_images <- lapply(ica_weights, function(x) {
+  p1_temp <- p1
+  p2_temp <- p2
+  new_df <- p1
+  new_df$z <- x[1] * p1_temp$z + x[2] * p2_temp$z + rnorm(tot_pix, sd = 0.1)
+  new_df
+  })
+
+ica_mixed_ps <- lapply(ica_mixed_images, function(x){
+  ggplot(x, aes(x = x, y = y, fill = z)) +
+  ica_g_options
+})
+
+plot_grid(plotlist = ica_mixed_ps)
+```
+
+```{r}
+ica_dfmixed <- do.call(cbind, ica_mixed_images)
+
+library(fastICA)
+ica <- fastICA(ica_dfmixed, n.comp = 4, alg.typ = 'deflation', method = "C", fun = "logcosh")
+```
+
+```{r}
+ica_res <- lapply(1:ncol(ica$S), function(x){
+  imMtoDF(matrix(ica$S[,x], nrow = dim(p1m)[1], ncol = dim(p1m)[2]))
+})
+
+ica_res_m <- do.call(rbind, ica_res)
+ica_res_m$plot <- rep(1:4, each = nrow(ica_res[[1]]))
+
+## probably should normalize grey values to be between 0 and 1
+ggplot(ica_res_m, aes(x = x, y = y, fill = z)) +
+  geom_tile() +
+  facet_wrap(~plot) +
+  scale_fill_gradient(low = 'black', high = 'white') 
+  # theme(legend.position = 'none')
+
+ica_mixed_res <- lapply(ica_res, function(x){
+  ggplot(x, aes(x = x, y = y, fill = z)) +
+  geom_tile() +
+  scale_fill_gradient(low = 'black', high = 'white') +
+  theme(legend.position = 'none')
+})
+
+plot_grid(plotlist = ica_mixed_res)
+```
+

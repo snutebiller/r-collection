@@ -207,6 +207,7 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#key-idea" id="toc-key-idea" class="nav-link" data-scroll-target="#key-idea">Key Idea</a></li>
   <li><a href="#independent-component-model" id="toc-independent-component-model" class="nav-link" data-scroll-target="#independent-component-model">Independent Component Model</a></li>
+  <li><a href="#estimation-1" id="toc-estimation-1" class="nav-link" data-scroll-target="#estimation-1">Estimation</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -1887,16 +1888,44 @@ H_1&amp;: \text{$\pmb{\Sigma}$ is more general (higher k necessary)}\\
 </section>
 <section id="independent-component-model" class="level2">
 <h2 class="anchored" data-anchor-id="independent-component-model">Independent Component Model</h2>
-<p>The independent component model is a linear, and noise-free model, that assumes that a mixing matrix <span class="math inline">\(\pmb{B} \in \mathbb{R}^{q\times k}\)</span> mixes the latent sources <span class="math inline">\(\pmb{S} \in \mathbb{R}^k\)</span> using linear combinations into the observed variables <span class="math inline">\(\pmb{X} \in \mathbb{R}^q\)</span>, given that <span class="math inline">\(E(\pmb{X}) = 0\)</span>.</p>
+<p>The independent component model is a linear, and noise-free model, that assumes that a mixing matrix <span class="math inline">\(\pmb{B} \in \mathbb{R}^{q\times k}\)</span> mixes the latent sources <span class="math inline">\(S \in \mathbb{R}^k\)</span> using linear combinations into the observed variables <span class="math inline">\(X \in \mathbb{R}^q\)</span>, given that <span class="math inline">\(E(\pmb{X}) = 0\)</span>.</p>
 <p><span class="math display">\[
-\pmb{X} = \pmb{BS}
+X = \pmb{B}S
 \]</span></p>
-<p>The goal is to find an <strong>unmixing matrix</strong> <span class="math inline">\(\pmb{W} \in \mathbb{R}^{k\times q}\)</span> that can separate the observed data into the latent sources. <span class="math inline">\(\pmb{X}\)</span> and <span class="math inline">\(\pmb{S}\)</span> are random vectors, while <span class="math inline">\(\pmb{B}\)</span> and <span class="math inline">\(\pmb{W}\)</span> are constant.</p>
+<p>The goal is to find an <strong>unmixing matrix</strong> <span class="math inline">\(\pmb{W} \in \mathbb{R}^{k\times q}\)</span> that can separate the observed data into the latent sources. <span class="math inline">\(X\)</span> and <span class="math inline">\(S\)</span> are random vectors, while <span class="math inline">\(\pmb{B}\)</span> and <span class="math inline">\(\pmb{W}\)</span> are constant.</p>
 <p><span class="math display">\[
-\pmb{S} = \pmb{WX}
+S = \pmb{W}X
 \]</span></p>
-<p>Observed variables need to be <strong>pre-whitened</strong> to be used for ICA, as this reduces the number of parameters that have to be estimated. Pre-whitening transforms the observed data <span class="math inline">\(\pmb{X}\)</span> such that the transformed, pre-whitened variables <span class="math inline">\(\pmb{X}^W\)</span> have a variance of one and are uncorrelated to each other. Pre-whitening can be achieved by using the result of the spectral decomposition of the data covariance matrix <span class="math inline">\(\mathrm{Cov}(\pmb{X}) = \pmb{\Sigma}\)</span>. <span class="math display">\[
-\pmb{X}^W = \pmb{\Sigma}^{-\frac{1}{2}}\pmb{X} = \pmb{AD}^{-\frac{1}{2}}\pmb{A}^T\pmb{X}
+<p>Observed variables need to be <strong>pre-whitened</strong> to be used for ICA, as this reduces the number of parameters that have to be estimated. Pre-whitening transforms the observed data <span class="math inline">\(X\)</span> such that the transformed, pre-whitened variables <span class="math inline">\(X^W\)</span> have a variance of one and are uncorrelated to each other. Pre-whitening can be achieved by using the result of the spectral decomposition of the data covariance matrix <span class="math inline">\(\mathrm{Cov}(X) = \pmb{\Sigma}\)</span>. <span class="math display">\[
+X^W = \pmb{\Sigma}^{-\frac{1}{2}}X = \pmb{AD}^{-\frac{1}{2}}\pmb{A}^TX
+\]</span> Due to the pre-whitening, the covariance matrix of the transformed data is <span class="math inline">\(\mathrm{Cov}(X^W) = \pmb{I}\)</span>. The pre-whitened data does not correspond to the latent signals, as rotation of <span class="math inline">\(X^W\)</span> by any rotation matrix does not change the structure of the covariance matrix <span class="math inline">\(\mathrm{Cov}(\pmb{OX}^W) = \pmb{OO}^T = \pmb{I}\)</span>.</p>
+<p>Key to the independent component analysis is that if the model holds true, there is a unique matrix <span class="math inline">\(\pmb{M} \in \mathbb{R}^{q\times k}\)</span> with <span class="math inline">\(\pmb{M}^T\pmb{M} = I_k\)</span> such that <span class="math display">\[
+\pmb{M}^TX^W = S
+\]</span></p>
+<p>Combining this with the pre-whitening, an unmixing matrix <span class="math inline">\(\pmb{W}\)</span> can be found <span class="math display">\[
+S = \pmb{M}^TX^W = \pmb{M}^T\pmb{AD}^{-\frac{1}{2}}\pmb{A}^TX = \pmb{W}X
+\]</span> Since <span class="math inline">\(X^W\)</span> can be inferred from the covariance matrix of <span class="math inline">\(X\)</span>, only <span class="math inline">\(\pmb{M}^T\)</span> has to be estimated. This estimation is based on the non-Gaussianity assumption mentioned previously, and allows to uniquely identify the latent sources <span class="math inline">\(S\)</span>. If the sources are gaussian distributed, the latent sources can only be identified up to rotations (as <span class="math inline">\(\pmb{M}^T\)</span> is not identifiable).</p>
+</section>
+<section id="estimation-1" class="level2">
+<h2 class="anchored" data-anchor-id="estimation-1">Estimation</h2>
+<p>The independent component model is estimated by rotating the pre-whitened data <span class="math inline">\(X^W\)</span> with the matrix <span class="math inline">\(\pmb{M}^T\)</span> such that the non-Gaussianity of the resulting latent sources <span class="math inline">\(S\)</span> are maximal.</p>
+<p>The <strong>excess kurtosis</strong> <span class="math inline">\(\kappa\)</span> <span class="math display">\[
+\kappa(Y) = E\left(Y^4\right)-3
+\]</span></p>
+<p>is a measure of deviation from the Gaussian distribution, in which positive kurtosis indicates that the underlying distribution has larger tails than a Gaussian distribution and thus produces more outliers, while negative kurtosis indicates smaller tails and thus less outliers.</p>
+<p>Finding a component can be accomplished by choosing <span class="math inline">\(M_1 = \left(M_{11}, \dots, M_{1q}\right)^T\)</span> such that the linear combination of <span class="math inline">\(M_1\)</span> and <span class="math inline">\(X^W\)</span> has maximal kurtosis, under the condition that <span class="math inline">\(M_1\)</span> is normalized. <span class="math display">\[
+M_1 = \mathop{\mathrm{\arg\!\max}}_{M_1\in\mathbb{R}^q:|M_1|_2=1} \kappa\left(M_1^TX^W\right)
+\]</span></p>
+<p>Importantly, the relation <span class="math display">\[
+\kappa\left(M_1^TX^W\right) \leq \max_{1\leq j\leq k}\kappa\left(S_j\right)
+\]</span> justifies that a source is found when the kurtosis is maximized.</p>
+<p>Estimating all the <span class="math inline">\(M_j\)</span> can be done either iteratively for the individual <span class="math inline">\(M_j\)</span> or for all the <span class="math inline">\(M_j\)</span> together. The iterative approach is called <em>one-by-one</em> or <em>deflation</em> approach, and requires that <span class="math inline">\(M_j\)</span> are orthogonal to previous components. <span class="math display">\[
+M_j = \mathop{\mathrm{\arg\!\max}}_{M_j\in\mathbb{R}^q:|M_j|_2=1} \kappa\left(M_j^TX^W\right)
+\]</span> for which <span class="math display">\[
+M_j^TM_i = 0
+\]</span> with <span class="math inline">\(i = 1, \dots, j -2\)</span>. Algorithmic implementations are dependent on initial values, thus rerunning the algorithm multiple times with different initial values or seeds may be helpful.</p>
+<p>The joint approach for estimating <span class="math inline">\(M_j\)</span> is called <em>symmetric</em> or <em>parallel</em> approach, and maximizes the sum of all kurtoses. <span class="math display">\[
+\pmb{M} = \mathop{\mathrm{\arg\!\max}}_{|M_1|_2=1,\dots,|M_k|_2=1} \kappa\left(M_1^TX^W\right)+ \dots + \kappa\left(M_k^TX^W\right)
 \]</span></p>
 
 
