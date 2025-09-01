@@ -480,7 +480,7 @@ Combining this with the pre-whitening, an unmixing matrix $\pmb{W}$ can be found
 $$
 S = \pmb{M}^TX^W = \pmb{M}^T\pmb{AD}^{-\frac{1}{2}}\pmb{A}^TX = \pmb{W}X
 $$
-Since $X^W$ can be inferred from the covariance matrix of $X$, only $\pmb{M}^T$ has to be estimated. This estimation is based on the non-Gaussianity assumption mentioned previously, and allows to uniquely identify the latent sources $S$. If the sources are gaussian distributed, the latent sources can only be identified up to rotations (as $\pmb{M}^T$ is not identifiable). 
+Since $X^W$ can be inferred from the covariance matrix of $X$, only $\pmb{M}^T$ has to be estimated. This estimation is based on the non-Gaussianity assumption mentioned previously, and allows to uniquely identify the latent sources $S$ up to permutations, sign changes, and scaling. If the sources are gaussian distributed, the latent sources can only be identified up to rotations (as $\pmb{M}^T$ is not identifiable).
 
 ## Estimation
 The independent component model is estimated by rotating the pre-whitened data $X^W$ with the matrix $\pmb{M}^T$ such that the non-Gaussianity of the resulting latent sources $S$ are maximal.
@@ -519,7 +519,7 @@ $$
 $$
 
 ## Example
-Example images (cropped to same dimensions)
+ICA can be used to disentangle merged images. Images were cropped to have the same dimensions and are stored in the form of matrices, in which the row $i$ and column $j$ index represent the pixel $(i,j)$, and the value of the matrix at $i,j$ is the grey value at that pixel. For the purpose of plotting with `ggplot2`, the data was transformed into a `data.frame` with columns that represent the row and column indexes, and the grey values.
 ```{r}
 library(imager)
 
@@ -539,6 +539,10 @@ imMtoDF <- function(m){
   rows <- rep(1:nrow(m), ncol(m))
   df <- data.frame(x = rows, y = cols, z = as.vector(m))
   df
+}
+
+ica_norm_grey <- function(x){
+  (x-min(x))/(max(x)-min(x))
 }
 
 p1 <- load.image('data/Pablo_picasso.jpg')
@@ -566,56 +570,58 @@ plot_grid(ica_g1, ica_g2)
 
 ```
 
+Artificial images were created by multiplying the image-matrices with a constant, adding the image matrices, and adding normal-distributed noise with a standard devation of 0.1.
 ```{r}
 ica_weights <- list(c(0.2, 0.8), c(0.7, 0.3), c(0.4, 0.1), c(0.1, 0.3))
 
 set.seed(78)
 tot_pix <- nrow(p1)
-ica_mixed_images <- lapply(ica_weights, function(x) {
+ica_mixed_images <- lapply(1:length(ica_weights), function(x) {
   p1_temp <- p1
   p2_temp <- p2
   new_df <- p1
-  new_df$z <- x[1] * p1_temp$z + x[2] * p2_temp$z + rnorm(tot_pix, sd = 0.1)
+  new_df$z <- ica_weights[[x]][1] * p1_temp$z + ica_weights[[x]][2] * p2_temp$z + rnorm(tot_pix, sd = 0.1)
+  new_df$plot <- x
   new_df
   })
 
-ica_mixed_ps <- lapply(ica_mixed_images, function(x){
-  ggplot(x, aes(x = x, y = y, fill = z)) +
-  ica_g_options
-})
+ica_mixed_im_df <- do.call(rbind, ica_mixed_images)
 
-plot_grid(plotlist = ica_mixed_ps)
+ggplot(ica_mixed_im_df, aes(x = x, y = y, fill = z)) +
+  geom_tile() +
+  facet_wrap(~plot) +
+  scale_fill_gradient(low = 'black', high = 'white')  +
+  theme(legend.position = 'none')
 ```
 
+Independent component analysis can be performed in `R` with the `fastICA` library. The data matrix in this example contains the pixel _values_ represented in rows, and the different images in different columns. There is no information on the position of the pixel in the input image, except that the position is the same for all the images.
 ```{r}
-ica_dfmixed <- do.call(cbind, ica_mixed_images)
+#| echo: true
+
+ica_dfmixed <- ica_mixed_images |>
+  lapply(function(x) x$z) |>
+    data.frame()
 
 library(fastICA)
 ica <- fastICA(ica_dfmixed, n.comp = 4, alg.typ = 'deflation', method = "C", fun = "logcosh")
 ```
 
+The estimated images can be extracted from the `$S` column of the `fastICA` results list. Since ICA can identify independent components only up to sign changes, the sign may have to be changed.
 ```{r}
 ica_res <- lapply(1:ncol(ica$S), function(x){
-  imMtoDF(matrix(ica$S[,x], nrow = dim(p1m)[1], ncol = dim(p1m)[2]))
+  res <- imMtoDF(matrix(ica$S[,x], nrow = ica_p_dims[1], ncol = ica_p_dims[2]))
+  res$z <- ica_norm_grey(res$z)
+  res
 })
 
 ica_res_m <- do.call(rbind, ica_res)
 ica_res_m$plot <- rep(1:4, each = nrow(ica_res[[1]]))
 
 ## probably should normalize grey values to be between 0 and 1
-ggplot(ica_res_m, aes(x = x, y = y, fill = z)) +
+ggplot(ica_res_m, aes(x = x, y = y, fill = -1*z)) +
   geom_tile() +
   facet_wrap(~plot) +
-  scale_fill_gradient(low = 'black', high = 'white') 
-  # theme(legend.position = 'none')
-
-ica_mixed_res <- lapply(ica_res, function(x){
-  ggplot(x, aes(x = x, y = y, fill = z)) +
-  geom_tile() +
-  scale_fill_gradient(low = 'black', high = 'white') +
+  scale_fill_gradient(low = 'black', high = 'white')  +
   theme(legend.position = 'none')
-})
-
-plot_grid(plotlist = ica_mixed_res)
 ```
 

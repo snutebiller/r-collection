@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.6.42">
+<meta name="generator" content="quarto-1.5.57">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -69,10 +69,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-54ebed522ef0dc2f427e72bc89b6c217.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -208,6 +208,7 @@ window.Quarto = {
   <li><a href="#key-idea" id="toc-key-idea" class="nav-link" data-scroll-target="#key-idea">Key Idea</a></li>
   <li><a href="#independent-component-model" id="toc-independent-component-model" class="nav-link" data-scroll-target="#independent-component-model">Independent Component Model</a></li>
   <li><a href="#estimation-1" id="toc-estimation-1" class="nav-link" data-scroll-target="#estimation-1">Estimation</a></li>
+  <li><a href="#example" id="toc-example" class="nav-link" data-scroll-target="#example">Example</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -1904,7 +1905,7 @@ X^W = \pmb{\Sigma}^{-\frac{1}{2}}X = \pmb{AD}^{-\frac{1}{2}}\pmb{A}^TX
 \]</span></p>
 <p>Combining this with the pre-whitening, an unmixing matrix <span class="math inline">\(\pmb{W}\)</span> can be found <span class="math display">\[
 S = \pmb{M}^TX^W = \pmb{M}^T\pmb{AD}^{-\frac{1}{2}}\pmb{A}^TX = \pmb{W}X
-\]</span> Since <span class="math inline">\(X^W\)</span> can be inferred from the covariance matrix of <span class="math inline">\(X\)</span>, only <span class="math inline">\(\pmb{M}^T\)</span> has to be estimated. This estimation is based on the non-Gaussianity assumption mentioned previously, and allows to uniquely identify the latent sources <span class="math inline">\(S\)</span>. If the sources are gaussian distributed, the latent sources can only be identified up to rotations (as <span class="math inline">\(\pmb{M}^T\)</span> is not identifiable).</p>
+\]</span> Since <span class="math inline">\(X^W\)</span> can be inferred from the covariance matrix of <span class="math inline">\(X\)</span>, only <span class="math inline">\(\pmb{M}^T\)</span> has to be estimated. This estimation is based on the non-Gaussianity assumption mentioned previously, and allows to uniquely identify the latent sources <span class="math inline">\(S\)</span> up to permutations, sign changes, and scaling. If the sources are gaussian distributed, the latent sources can only be identified up to rotations (as <span class="math inline">\(\pmb{M}^T\)</span> is not identifiable).</p>
 </section>
 <section id="estimation-1" class="level2">
 <h2 class="anchored" data-anchor-id="estimation-1">Estimation</h2>
@@ -1927,6 +1928,40 @@ M_j^TM_i = 0
 <p>The joint approach for estimating <span class="math inline">\(M_j\)</span> is called <em>symmetric</em> or <em>parallel</em> approach, and maximizes the sum of all kurtoses. <span class="math display">\[
 \pmb{M} = \mathop{\mathrm{\arg\!\max}}_{|M_1|_2=1,\dots,|M_k|_2=1} \kappa\left(M_1^TX^W\right)+ \dots + \kappa\left(M_k^TX^W\right)
 \]</span></p>
+</section>
+<section id="example" class="level2">
+<h2 class="anchored" data-anchor-id="example">Example</h2>
+<p>ICA can be used to disentangle merged images. Images were cropped to have the same dimensions and are stored in the form of matrices, in which the row <span class="math inline">\(i\)</span> and column <span class="math inline">\(j\)</span> index represent the pixel <span class="math inline">\((i,j)\)</span>, and the value of the matrix at <span class="math inline">\(i,j\)</span> is the grey value at that pixel. For the purpose of plotting with <code>ggplot2</code>, the data was transformed into a <code>data.frame</code> with columns that represent the row and column indexes, and the grey values.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="multivariate_statistics_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="480"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Artificial images were created by multiplying the image-matrices with a constant, adding the image matrices, and adding normal-distributed noise with a standard devation of 0.1.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="multivariate_statistics_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="480"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Independent component analysis can be performed in <code>R</code> with the <code>fastICA</code> library. The data matrix in this example contains the pixel <em>values</em> represented in rows, and the different images in different columns. There is no information on the position of the pixel in the input image, except that the position is the same for all the images.</p>
+<p>The estimated images can be extracted from the <code>$S</code> column of the <code>fastICA</code> results list. Since ICA can identify independent components only up to sign changes, the sign may have to be changed.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="multivariate_statistics_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="480"></p>
+</figure>
+</div>
+</div>
+</div>
 
 
 </section>
@@ -2015,6 +2050,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
   clipboard.on('success', onCopySuccess);
   if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
     const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
       text: getTextToCopy,
       container: window.document.getElementById('quarto-embedded-source-code-modal')
@@ -2125,6 +2162,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
+      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {
