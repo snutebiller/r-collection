@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.57">
+<meta name="generator" content="quarto-1.6.42">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -69,10 +69,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-0199838f144e09fc5cda80b9543d20d9.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -1941,23 +1941,156 @@ M_j^TM_i = 0
 </div>
 </div>
 </div>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table caption-top table-sm table-striped small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: center;" data-quarto-table-cell-role="th">x</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">y</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">z</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">584</td>
+<td style="text-align: center;">0.482</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">584</td>
+<td style="text-align: center;">0.471</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">584</td>
+<td style="text-align: center;">0.482</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">584</td>
+<td style="text-align: center;">0.510</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">584</td>
+<td style="text-align: center;">0.518</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
 <p>Artificial images were created by multiplying the image-matrices with a constant, adding the image matrices, and adding normal-distributed noise with a standard devation of 0.1.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="multivariate_statistics_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="480"></p>
-</figure>
+<table class="table caption-top table-sm table-striped small" data-quarto-postprocess="true">
+<caption>Weights used to create mixed images</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th"></th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">1</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">2</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">3</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">4</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Picasso</td>
+<td style="text-align: center;">0.2</td>
+<td style="text-align: center;">0.7</td>
+<td style="text-align: center;">0.4</td>
+<td style="text-align: center;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Jackson</td>
+<td style="text-align: center;">0.8</td>
+<td style="text-align: center;">0.3</td>
+<td style="text-align: center;">0.1</td>
+<td style="text-align: center;">0.3</td>
+</tr>
+</tbody>
+</table>
+
+
 </div>
 </div>
-</div>
-<p>Independent component analysis can be performed in <code>R</code> with the <code>fastICA</code> library. The data matrix in this example contains the pixel <em>values</em> represented in rows, and the different images in different columns. There is no information on the position of the pixel in the input image, except that the position is the same for all the images.</p>
-<p>The estimated images can be extracted from the <code>$S</code> column of the <code>fastICA</code> results list. Since ICA can identify independent components only up to sign changes, the sign may have to be changed.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div>
 <figure class="figure">
 <p><img src="multivariate_statistics_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="480"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Independent component analysis can be performed in <code>R</code> with the <code>fastICA</code> library. The data matrix in this example contains the pixel <em>values</em> represented in rows, and the different images in different columns. There is no information on the position of the pixel in the input image, except that the position is the same for all the images.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table caption-top table-sm table-striped small" data-quarto-postprocess="true">
+<caption>Organization of data for analysis by <code>fastICA</code>. Rows contain the grayscale value for the same pixel, while represent different images.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: center;" data-quarto-table-cell-role="th">imag1</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">imag2</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">imag3</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">imag4</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">0.3595709</td>
+<td style="text-align: center;">0.4210391</td>
+<td style="text-align: center;">0.2212562</td>
+<td style="text-align: center;">0.1903973</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">0.3332656</td>
+<td style="text-align: center;">0.3873671</td>
+<td style="text-align: center;">0.1410608</td>
+<td style="text-align: center;">0.1148189</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">0.4235842</td>
+<td style="text-align: center;">0.4907311</td>
+<td style="text-align: center;">0.1880498</td>
+<td style="text-align: center;">0.0376126</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">0.2583991</td>
+<td style="text-align: center;">0.3821057</td>
+<td style="text-align: center;">0.0560701</td>
+<td style="text-align: center;">0.0588594</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">0.1873558</td>
+<td style="text-align: center;">0.5448562</td>
+<td style="text-align: center;">0.1802650</td>
+<td style="text-align: center;">0.1309996</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fastICA)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>ica <span class="ot">&lt;-</span> <span class="fu">fastICA</span>(ica_dfmixed, </span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">n.comp =</span> <span class="dv">4</span>, </span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">alg.typ =</span> <span class="st">'deflation'</span>, </span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>               <span class="at">method =</span> <span class="st">"C"</span>, </span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>               <span class="at">fun =</span> <span class="st">"logcosh"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The estimated images can be extracted from the <code>$S</code> column of the <code>fastICA</code> results list. Since ICA can identify independent components only up to sign changes, the sign may have to be changed.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="multivariate_statistics_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid figure-img" width="480"></p>
 </figure>
 </div>
 </div>
@@ -2050,8 +2183,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
   clipboard.on('success', onCopySuccess);
   if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-    // For code content inside modals, clipBoardJS needs to be initialized with a container option
-    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
     const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
       text: getTextToCopy,
       container: window.document.getElementById('quarto-embedded-source-code-modal')
@@ -2162,7 +2293,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
-      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {

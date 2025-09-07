@@ -569,11 +569,27 @@ plot_grid(ica_g1, ica_g2)
 
 
 ```
+```{r}
+kable(round(p1[1:5,], 3),
+      align = 'c',
+      table.attr = 'data-quarto-disable-processing="true"') |>
+  kable_styling(full_width=FALSE)
+```
+
 
 Artificial images were created by multiplying the image-matrices with a constant, adding the image matrices, and adding normal-distributed noise with a standard devation of 0.1.
 ```{r}
-ica_weights <- list(c(0.2, 0.8), c(0.7, 0.3), c(0.4, 0.1), c(0.1, 0.3))
+#| tbl-cap: Weights used to create mixed images
 
+ica_weights <- list(c(0.2, 0.8), c(0.7, 0.3), c(0.4, 0.1), c(0.1, 0.3))
+kable(as.data.frame(ica_weights, row.names = c('Picasso', 'Jackson')),
+      align = 'c',
+      row.names = TRUE,
+      col.names = 1:4,
+      table.attr = 'data-quarto-disable-processing="true"') |>
+  kable_styling(full_width=FALSE)
+```
+```{r}
 set.seed(78)
 tot_pix <- nrow(p1)
 ica_mixed_images <- lapply(1:length(ica_weights), function(x) {
@@ -596,14 +612,28 @@ ggplot(ica_mixed_im_df, aes(x = x, y = y, fill = z)) +
 
 Independent component analysis can be performed in `R` with the `fastICA` library. The data matrix in this example contains the pixel _values_ represented in rows, and the different images in different columns. There is no information on the position of the pixel in the input image, except that the position is the same for all the images.
 ```{r}
-#| echo: true
+#| tbl-cap: Organization of data for analysis by `fastICA`. Rows contain the grayscale value for the same pixel, while represent different images. 
 
 ica_dfmixed <- ica_mixed_images |>
   lapply(function(x) x$z) |>
     data.frame()
+colnames(ica_dfmixed) <- paste('imag', 1:4, sep = '')
+
+kable(as.data.frame(ica_dfmixed[1:5,]),
+      table.attr = 'data-quarto-disable-processing="true"',
+      align = 'c') |>
+  kable_styling(full_width=FALSE)
+```
+
+```{r}
+#| echo: true
 
 library(fastICA)
-ica <- fastICA(ica_dfmixed, n.comp = 4, alg.typ = 'deflation', method = "C", fun = "logcosh")
+ica <- fastICA(ica_dfmixed, 
+               n.comp = 4, 
+               alg.typ = 'deflation', 
+               method = "C", 
+               fun = "logcosh")
 ```
 
 The estimated images can be extracted from the `$S` column of the `fastICA` results list. Since ICA can identify independent components only up to sign changes, the sign may have to be changed.
